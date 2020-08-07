@@ -1,0 +1,5 @@
+basilicom_field_translator:
+    resource: "@BasilicomFieldTranslatorBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
