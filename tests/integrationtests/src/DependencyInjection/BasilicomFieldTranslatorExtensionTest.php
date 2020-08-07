@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Basilicom\PathFormatterBundle\DependencyInjection;
+namespace Basilicom\FieldTranslatorBundle\DependencyInjection;
 
-use Basilicom\FieldTranslatorBundle\DependencyInjection\BasilicomFieldTranslatorExtension;
-use Basilicom\FieldTranslatorBundle\DependencyInjection\ConfigDefinition;
 use Basilicom\FieldTranslatorBundle\Translator\TranslatorFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class BasilicomFieldTranslatorExtensionTest extends TestCase
@@ -25,13 +24,13 @@ class BasilicomFieldTranslatorExtensionTest extends TestCase
         $containerDefinitionMock = $this->createMock(Definition::class);
         $containerDefinitionMock->expects($this->at(0))
             ->method('setArgument')
-            ->with(1, TranslatorFactory::DEEP_L);
+            ->with(0, TranslatorFactory::DEEP_L);
         $containerDefinitionMock->expects($this->at(1))
             ->method('setArgument')
             ->with(
-                2,
+                1,
                 [
-                    ConfigDefinition::API_KEY => '<- the API key->'
+                    ConfigDefinition::API_KEY => '<- the API key->',
                 ]
             );
 
