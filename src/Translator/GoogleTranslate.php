@@ -2,6 +2,7 @@
 
 namespace Basilicom\FieldTranslatorBundle\Translator;
 
+use Exception;
 use Google\Cloud\Translate\V2\TranslateClient;
 
 class GoogleTranslate implements Translator

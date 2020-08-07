@@ -3,7 +3,7 @@
 namespace Basilicom\FieldTranslatorBundle\Translator;
 
 use Basilicom\FieldTranslatorBundle\DependencyInjection\ConfigDefinition;
-use ErrorException;
+use Exception;
 use Google\Cloud\Translate\V2\TranslateClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\CurlHttpClient;
@@ -27,7 +27,7 @@ class TranslatorFactory
     }
 
     /**
-     * @throws ErrorException
+     * @throws Exception
      */
     public function createTranslator(): Translator
     {
@@ -54,7 +54,7 @@ class TranslatorFactory
                 $errorMessage = 'Unsupported strategy ' . $this->strategy . '.';
 
                 $this->logger->error($errorMessage);
-                throw new ErrorException($errorMessage);
+                throw new Exception($errorMessage);
         }
     }
 }

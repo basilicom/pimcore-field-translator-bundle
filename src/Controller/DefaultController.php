@@ -2,6 +2,7 @@
 
 namespace Basilicom\FieldTranslatorBundle\Controller;
 
+use Exception;
 use Basilicom\FieldTranslatorBundle\Translator\Translator;
 use Pimcore\Controller\FrontendController;
 use Symfony\Component\HttpFoundation\Request;
