@@ -1,4 +1,4 @@
 basilicom_field_translator:
-  strategy: DeepL # available GoogleTranslate|DeepL
+  strategy: GoogleTranslate
   config:
     apiKey: "<- the API key->"

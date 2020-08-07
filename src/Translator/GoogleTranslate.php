@@ -16,11 +16,10 @@ class GoogleTranslate implements Translator
     /**
      * @inheritDoc
      */
-    public function translate(string $text, string $targetLocale): string
+    public function translate(string $text, string $targetLanguage, string $sourceLanguage = ''): string
     {
-        return $targetLocale . ' - ' . $text;
-//        $result = $this->translationService->translate($text, ['target' => $targetLocale]);
-//
-//        return $result ? $result['text'] : $text;
+        $result = $this->translationService->translate($text, ['target' => $targetLanguage]);
+
+        return $result ? $result['text'] : $text;
     }
 }
