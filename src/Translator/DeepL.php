@@ -3,6 +3,8 @@
 namespace Basilicom\FieldTranslatorBundle\Translator;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\Exception\ClientException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -43,8 +45,11 @@ class DeepL implements Translator
             );
 
             $text = $response->toArray()['translations'][0]['text']; // @todo make fail-safe
-        } catch (TransportExceptionInterface $exception) {
-            $this->logger->error('Error requesting DeepL-API: ' . $exception->getMessage());
+        } catch (\Exception $exception) {
+            throw new Exception(
+                'Error requesting DeepL-API: ' . $exception->getMessage(),
+                $exception->getCode()
+            );
         }
 
         return $text;

@@ -22,17 +22,36 @@ class DefaultController extends FrontendController
      */
     public function indexAction(Request $request)
     {
-        $headers = ['Content-Type' => 'application/json; charset=utf-8'];
-        $status = Response::HTTP_OK;
-
-        $text = $request->get('text');
-        $languages = $request->get('languages');
+        $requestData = $this->getRequestData($request);
+        $text = (string) $requestData['text'];
+        $languages = (array) $requestData['languages'];
 
         $payload = [];
-        foreach ($languages as $language) {
-            $payload[$language] = $this->translator->translate($text, $language);
+
+        try {
+            $status = Response::HTTP_OK;
+            foreach ($languages as $language) {
+                $payload[$language] = $this->translator->translate($text, $language);
+            }
+        } catch (Exception $exception) {
+            $status = Response::HTTP_BAD_REQUEST;
+            $payload = [
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+            ];
         }
 
-        return parent::json($payload, $status, $headers);
+        return parent::json($payload, $status, ['Content-Type' => 'application/json; charset=utf-8']);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getRequestData(Request $request)
+    {
+        $jsonRequestData = json_decode($request->getContent(), true);
+        $requestData = $jsonRequestData ? $jsonRequestData : $request->request->all();
+
+        return (array) $requestData;
     }
 }

@@ -18,7 +18,11 @@ class GoogleTranslate implements Translator
      */
     public function translate(string $text, string $targetLanguage, string $sourceLanguage = ''): string
     {
-        $result = $this->translationService->translate($text, ['target' => $targetLanguage]);
+        try {
+            $result = $this->translationService->translate($text, ['target' => $targetLanguage]);
+        } catch (Exception $exception) {
+            throw new Exception('Error requesting API: ' . $exception->getMessage(), $exception->getCode());
+        }
 
         return $result ? $result['text'] : $text;
     }
