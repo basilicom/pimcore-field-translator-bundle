@@ -5,7 +5,6 @@ namespace Basilicom\FieldTranslatorBundle\Translator;
 use Basilicom\FieldTranslatorBundle\DependencyInjection\ConfigDefinition;
 use Exception;
 use Google\Cloud\Translate\V2\TranslateClient;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\CurlHttpClient;
 
 class TranslatorFactory
@@ -17,13 +16,10 @@ class TranslatorFactory
 
     private $translatorConfig;
 
-    private $logger;
-
-    public function __construct(string $strategy, array $translatorConfig, LoggerInterface $logger)
+    public function __construct(string $strategy, array $translatorConfig)
     {
         $this->strategy = $strategy;
         $this->translatorConfig = $translatorConfig;
-        $this->logger = $logger;
     }
 
     /**
@@ -41,7 +37,7 @@ class TranslatorFactory
                     ]
                 );
 
-                return new DeepL($httpClient, $this->logger);
+                return new DeepL($httpClient);
             case self::GOOGLE_TRANSLATE:
                 $translateClient = new TranslateClient(
                     [
@@ -53,7 +49,6 @@ class TranslatorFactory
             default:
                 $errorMessage = 'Unsupported strategy ' . $this->strategy . '.';
 
-                $this->logger->error($errorMessage);
                 throw new Exception($errorMessage);
         }
     }
