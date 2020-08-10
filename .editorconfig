@@ -1,0 +1,41 @@
+# editorconfig.org
+root = true
+
+[*]
+charset=utf-8
+end_of_line=lf
+insert_final_newline=true
+trim_trailing_whitespace=true
+indent_style=space
+indent_size=2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[{*.ats,*.ts}]
+indent_style=space
+indent_size=4
+
+[{ProxyService,*.hphp,*.phtml,*.module,*.php,*.php5,*.php4,*.inc}]
+indent_style=space
+indent_size=4
+
+[*.twig]
+indent_style=space
+indent_size=4
+
+[*.sass]
+indent_style=space
+indent_size=2
+
+[*.scss]
+indent_style=space
+indent_size=2
+
+[{*.yml,*.yaml}]
+indent_style=space
+indent_size=2
+
+[yarn.lock]
+indent_style=space
+indent_size=2

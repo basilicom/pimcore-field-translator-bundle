@@ -25,24 +25,31 @@ class DefaultController extends FrontendController
     {
         $requestData = $this->getRequestData($request);
         $text = (string) $requestData['text'];
-        $languages = (array) $requestData['languages'];
-
-        $payload = [];
+        $sourceLanguage = (string) $requestData['sourceLanguage'];
+        $targetLanguages = (array) $requestData['targetLanguages'];
 
         try {
-            $status = Response::HTTP_OK;
-            foreach ($languages as $language) {
-                $payload[$language] = $this->translator->translate($text, $language);
+            $payload = [
+                'status' => Response::HTTP_OK,
+                'texts' => [],
+            ];
+
+            foreach ($targetLanguages as $targetLanguage) {
+                $payload['texts'][$targetLanguage] = $this->translator->translate(
+                    $text,
+                    $targetLanguage,
+                    $sourceLanguage
+                );
             }
         } catch (Exception $exception) {
-            $status = Response::HTTP_BAD_REQUEST;
             $payload = [
-                'code' => $exception->getCode(),
-                'message' => $exception->getMessage(),
+                'status' => Response::HTTP_BAD_REQUEST,
+                'errorCode' => $exception->getMessage(),
+                'errorMessage' => $exception->getMessage(),
             ];
         }
 
-        return parent::json($payload, $status, ['Content-Type' => 'application/json; charset=utf-8']);
+        return parent::json($payload, $payload['status'], ['Content-Type' => 'application/json; charset=utf-8']);
     }
 
     /**
