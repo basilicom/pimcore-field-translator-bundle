@@ -1,5 +1,5 @@
 pimcore.object.tags.wysiwyg.defaultEditorConfig = {
-    extraPlugins: [
-        "BasilicomTranslator",
-    ]
+  extraPlugins: [
+    "BasilicomTranslator",
+  ]
 };

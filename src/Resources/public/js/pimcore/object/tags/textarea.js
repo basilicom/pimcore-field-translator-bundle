@@ -1,16 +1,15 @@
 pimcore.object.tags.textarea = Class.create(pimcore.object.tags.textarea, {
   getLayoutEdit: function ($super) {
-    var panel = $super();
+    var panelElement = $super();
+    var context = this.context;
 
-    panel.on("afterrender", function (el) {
-      panel.bodyEl.setStyle('position', 'relative');
-      var translateButton = Ext.core.DomHelper.append(panel.bodyEl.dom, '<div class="basilicom-translator_button"></div>');
-      Ext.get(translateButton).addListener('click', function (event) {
-
+    if (context.containerType === 'localizedfield') {
+      panelElement.on("afterrender", function (element) {
+        pimcore.object.basilicom.addTranslationButton(element, context)
       });
-    });
+    }
 
-    return panel;
+    return panelElement;
   }
 });
 
