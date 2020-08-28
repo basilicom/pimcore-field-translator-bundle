@@ -1,3 +1,5 @@
+// todo => disable button if input is empty
+// todo => disable button if value changed by ajax response and not changed
 pimcore.object.tags.textarea = Class.create(pimcore.object.tags.textarea, {
   getLayoutEdit: function ($super) {
     var panelElement = $super();
@@ -12,5 +14,3 @@ pimcore.object.tags.textarea = Class.create(pimcore.object.tags.textarea, {
     return panelElement;
   }
 });
-
-// @todo wysiwyg => set context and get it from the ckeditor plugin

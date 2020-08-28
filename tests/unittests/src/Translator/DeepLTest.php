@@ -26,6 +26,7 @@ class DeepLTest extends TestCase
         $text = 'Hello world';
         $targetLanguage = 'de';
         $sourceLanguage = 'en';
+        $apiKey = '<!-- some api key ->';
 
         // @see https://www.deepl.com/docs-api/translating-text/
         $responseMock = $this->createMock(ResponseInterface::class);
@@ -47,6 +48,9 @@ class DeepLTest extends TestCase
                 'POST',
                 'https://api.deepl.com/v2/translate',
                 [
+                    'query' => [
+                        'auth_key' => $apiKey,
+                    ],
                     'body' => [
                         'text' => $text,
                         'target_lang' => strtoupper($targetLanguage),
@@ -56,7 +60,7 @@ class DeepLTest extends TestCase
             )
             ->willReturn($responseMock);
 
-        $classUnderTest = new DeepL($clientMock);
+        $classUnderTest = new DeepL($clientMock, $apiKey);
 
         // test
         $result = $classUnderTest->translate($text, $targetLanguage, $sourceLanguage);
@@ -76,13 +80,14 @@ class DeepLTest extends TestCase
         $text = 'Hello world';
         $targetLanguage = 'de';
         $sourceLanguage = 'en';
+        $apiKey = '<!-- some api key ->';
 
         $clientMock = $this->createMock(HttpClientInterface::class);
         $clientMock->expects($this->once())
             ->method('request')
             ->willThrowException(new RuntimeException());
 
-        $classUnderTest = new DeepL($clientMock);
+        $classUnderTest = new DeepL($clientMock, $apiKey);
 
         // test
         $this->expectException(Exception::class);

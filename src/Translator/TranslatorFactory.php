@@ -29,15 +29,10 @@ class TranslatorFactory
     {
         switch ($this->strategy) {
             case self::DEEP_L:
-                $httpClient = new CurlHttpClient(
-                    [
-                        'query' => [
-                            'auth_key' => $this->translatorConfig[ConfigDefinition::API_KEY],
-                        ],
-                    ]
-                );
+                $httpClient = new CurlHttpClient();
+                $apiKey = $this->translatorConfig[ConfigDefinition::API_KEY];
 
-                return new DeepL($httpClient);
+                return new DeepL($httpClient, $apiKey);
             case self::GOOGLE_TRANSLATE:
                 $translateClient = new TranslateClient(
                     [

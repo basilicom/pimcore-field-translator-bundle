@@ -5,6 +5,7 @@ namespace Basilicom\FieldTranslatorBundle\Controller;
 use Exception;
 use Basilicom\FieldTranslatorBundle\Translator\Translator;
 use Pimcore\Controller\FrontendController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,6 +21,9 @@ class DefaultController extends FrontendController
 
     /**
      * @Route("/basilicom/field-translator/translate", methods={"POST"})
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
     public function indexAction(Request $request)
     {

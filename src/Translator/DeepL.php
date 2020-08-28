@@ -9,10 +9,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class DeepL implements Translator
 {
     private $client;
+    private $apiKey;
 
-    public function __construct(HttpClientInterface $client)
+    public function __construct(HttpClientInterface $client, string $apiKey)
     {
         $this->client = $client;
+        $this->apiKey = $apiKey;
     }
 
     /**
@@ -35,6 +37,9 @@ class DeepL implements Translator
                 'POST',
                 'https://api.deepl.com/v2/translate',
                 [
+                    'query' => [
+                        'auth_key' => $this->apiKey,
+                    ],
                     'body' => $payload,
                 ]
             );

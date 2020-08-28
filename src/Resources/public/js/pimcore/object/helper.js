@@ -5,11 +5,11 @@ pimcore.object.basilicom.addTranslationButton = function (element, context) {
   var translateButton = Ext.core.DomHelper.append(element.bodyEl.dom, '<a class="basilicom-translator_button"></a>');
   Ext.get(translateButton).addListener('click', function () {
     var sourceLanguage = ''; // auto detect
-    var targetLanguages = [context.language];
+    let targetLanguage = context.language;
     var textToTranslate = element.getValue();
 
     if (textToTranslate.length > 0) {
-      pimcore.object.basilicom.translate(textToTranslate, sourceLanguage, targetLanguages, function (resultData) {
+      pimcore.object.basilicom.translate(textToTranslate, sourceLanguage, [targetLanguage], function (resultData) {
         element.setValue(resultData.texts[targetLanguage]);
       });
     }
