@@ -1,5 +1,5 @@
 {
-  "name": "basilicom/field-translator-bundle",
+  "name": "basilicom/pimcore-field-translator-bundle",
   "license": "GPL-3.0-or-later",
   "type": "pimcore-bundle",
   "description": "A Pimcore bundle to provide translation helpers for fields in the Pimcore Backend.",
