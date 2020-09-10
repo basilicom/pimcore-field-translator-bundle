@@ -1,17 +1,14 @@
-pimcore.registerNS("pimcore.plugin.BasilicomFieldTranslatorBundle");
+// todo => create service which requests translations => use it in the tag files
+pimcore.registerNS("pimcore.plugin.basilicomTranslator");
 
-pimcore.plugin.BasilicomFieldTranslatorBundle = Class.create(pimcore.plugin.admin, {
-    getClassName: function () {
-        return "pimcore.plugin.BasilicomFieldTranslatorBundle";
-    },
+pimcore.plugin.basilicomTranslator = Class.create(pimcore.plugin.admin, {
+  getClassName: function () {
+    return "pimcore.plugin.basilicomTranslator";
+  },
 
-    initialize: function () {
-        pimcore.plugin.broker.registerPlugin(this);
-    },
-
-    pimcoreReady: function (params, broker) {
-        // alert("BasilicomFieldTranslatorBundle ready!");
-    }
+  initialize: function () {
+    pimcore.plugin.broker.registerPlugin(this);
+  }
 });
 
-var BasilicomFieldTranslatorBundlePlugin = new pimcore.plugin.BasilicomFieldTranslatorBundle();
+var basilicomTranslatorPlugin = new pimcore.plugin.basilicomTranslator();

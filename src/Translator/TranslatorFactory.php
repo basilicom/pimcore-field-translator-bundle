@@ -3,12 +3,14 @@
 namespace Basilicom\FieldTranslatorBundle\Translator;
 
 use Basilicom\FieldTranslatorBundle\DependencyInjection\ConfigDefinition;
-use ErrorException;
+use Exception;
 use Google\Cloud\Translate\V2\TranslateClient;
+use Symfony\Component\HttpClient\CurlHttpClient;
 
 class TranslatorFactory
 {
     public const GOOGLE_TRANSLATE = 'GoogleTranslate';
+    public const DEEP_L = 'DeepL';
 
     private $strategy;
 
@@ -21,21 +23,28 @@ class TranslatorFactory
     }
 
     /**
-     * @throws ErrorException
+     * @throws Exception
      */
     public function createTranslator(): Translator
     {
         switch ($this->strategy) {
+            case self::DEEP_L:
+                $httpClient = new CurlHttpClient();
+                $apiKey = $this->translatorConfig[ConfigDefinition::API_KEY];
+
+                return new DeepL($httpClient, $apiKey);
             case self::GOOGLE_TRANSLATE:
                 $translateClient = new TranslateClient(
                     [
-                        'key' => $this->translatorConfig[ConfigDefinition::API_KEY]
+                        'key' => $this->translatorConfig[ConfigDefinition::API_KEY],
                     ]
                 );
 
                 return new GoogleTranslate($translateClient);
             default:
-                throw new ErrorException('Unsupported strategy.');
+                $errorMessage = 'Unsupported strategy ' . $this->strategy . '.';
+
+                throw new Exception($errorMessage);
         }
     }
 }

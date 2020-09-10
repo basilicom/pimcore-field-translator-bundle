@@ -25,6 +25,7 @@ class ConfigDefinition implements ConfigurationInterface
                     ->values(
                         [
                             TranslatorFactory::GOOGLE_TRANSLATE,
+                            TranslatorFactory::DEEP_L,
                         ]
                     )
                 ->end()

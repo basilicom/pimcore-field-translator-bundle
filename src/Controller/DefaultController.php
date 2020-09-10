@@ -2,8 +2,10 @@
 
 namespace Basilicom\FieldTranslatorBundle\Controller;
 
+use Exception;
 use Basilicom\FieldTranslatorBundle\Translator\Translator;
 use Pimcore\Controller\FrontendController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,20 +21,49 @@ class DefaultController extends FrontendController
 
     /**
      * @Route("/basilicom/field-translator/translate", methods={"POST"})
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
     public function indexAction(Request $request)
     {
-        $headers = ['Content-Type' => 'application/json; charset=utf-8'];
-        $status = Response::HTTP_OK;
+        $requestData = $this->getRequestData($request);
+        $text = (string) $requestData['text'];
+        $sourceLanguage = (string) $requestData['sourceLanguage'];
+        $targetLanguages = (array) $requestData['targetLanguages'];
 
-        $text = $request->get('text');
-        $languages = $request->get('languages');
+        try {
+            $payload = [
+                'status' => Response::HTTP_OK,
+                'texts' => [],
+            ];
 
-        $payload = [];
-        foreach ($languages as $language) {
-            $payload[$language] = $this->translator->translate($text, $language);
+            foreach ($targetLanguages as $targetLanguage) {
+                $payload['texts'][$targetLanguage] = $this->translator->translate(
+                    $text,
+                    $targetLanguage,
+                    $sourceLanguage
+                );
+            }
+        } catch (Exception $exception) {
+            $payload = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'errorCode' => $exception->getMessage(),
+                'errorMessage' => $exception->getMessage(),
+            ];
         }
 
-        return parent::json($payload, $status, $headers);
+        return parent::json($payload, $payload['status'], ['Content-Type' => 'application/json; charset=utf-8']);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getRequestData(Request $request)
+    {
+        $jsonRequestData = json_decode($request->getContent(), true);
+        $requestData = $jsonRequestData ? $jsonRequestData : $request->request->all();
+
+        return (array) $requestData;
     }
 }
