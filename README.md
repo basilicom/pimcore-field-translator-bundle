@@ -1,7 +1,5 @@
 # Basilicom Field Translator Bundle
 
-WORK IN PROGRESS
-
 ## Usecase / Summary
 The translation bundle will automatically extend Pimcores localized fields.  
 In order to translate a field you will get an additional "translate" option when viewing the fields in a dataobject. 
