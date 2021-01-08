@@ -5,7 +5,7 @@ pimcore.object.tags.textarea = Class.create(pimcore.object.tags.textarea, {
     var panelElement = $super();
     var context = this.context;
 
-    if (context.containerType === 'localizedfield') {
+    if (context && context.hasOwnProperty('containerType') && context.containerType === 'localizedfield') {
       panelElement.on("afterrender", function (element) {
         pimcore.object.basilicom.addTranslationButton(element, context)
       });
