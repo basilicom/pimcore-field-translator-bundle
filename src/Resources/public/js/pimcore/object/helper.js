@@ -21,11 +21,18 @@ pimcore.object.basilicom.addPanelTranslationButton = function (localizedFieldPan
   const sourceLanguage = ''; // autodiscover
   const targetLanguage = 'de'; // todo
 
+  // let objectId = context.objectId;
+  // let myObject = pimcore.globalmanager.get('object_' + objectId);
+  //
+  // console.log(myObject.edit.dataFields.localizedfields);
+  // console.log(myObject.edit.dataFields.localizedfields.getValue());
+
   const onSubmit = function (tabPanel) {
     let componentValues = {};
 
     tabPanel.query('component').forEach((component) => {
       if (typeof component.getValue !== "undefined") {
+        console.log(component);
         componentValues[component.id] = component.getValue();
       } else {
         let editorElement = document.querySelector('#' + component.id + ' .cke_editable');
