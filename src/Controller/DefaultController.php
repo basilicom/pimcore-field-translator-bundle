@@ -2,6 +2,7 @@
 
 namespace Basilicom\FieldTranslatorBundle\Controller;
 
+use Basilicom\FieldTranslatorBundle\Translator\TranslationService;
 use Exception;
 use Basilicom\FieldTranslatorBundle\Translator\Translator;
 use Pimcore\Controller\FrontendController;
@@ -12,11 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends FrontendController
 {
-    private $translator;
+    const BULK_TRANSLATION_SEPARATOR = '%%%-%%%';
 
-    public function __construct(Translator $translator)
+    private $translationService;
+
+    public function __construct(TranslationService $translationService)
     {
-        $this->translator = $translator;
+        $this->translationService = $translationService;
     }
 
     /**
@@ -25,26 +28,48 @@ class DefaultController extends FrontendController
      *
      * @return JsonResponse
      */
-    public function indexAction(Request $request)
+    public function translate(Request $request)
     {
         $requestData = $this->getRequestData($request);
-        $text = (string) $requestData['text'];
-        $sourceLanguage = (string) $requestData['sourceLanguage'];
-        $targetLanguages = (array) $requestData['targetLanguages'];
+        $text = (string)$requestData['text'];
+        $targetLanguage = (string)$requestData['language'];
+
+        try {
+            $translationResult = $this->translationService->translate($text, $targetLanguage);
+
+            $payload = [
+                'status' => Response::HTTP_OK,
+                'translation' => $translationResult
+            ];
+        } catch (Exception $exception) {
+            $payload = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'errorCode' => $exception->getMessage(),
+                'errorMessage' => $exception->getMessage(),
+            ];
+        }
+
+        return parent::json($payload, $payload['status'], ['Content-Type' => 'application/json; charset=utf-8']);
+    }
+
+    /**
+     * @Route("/basilicom/field-translator/bulk-translate", methods={"POST"})
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function bulkTranslate(Request $request)
+    {
+        $requestData = $this->getRequestData($request);
+        $fields = (array)$requestData['fields'];
+        $sourceLanguage = (string)$requestData['sourceLanguage'];
+        $targetLanguage = (string)$requestData['targetLanguage'];
 
         try {
             $payload = [
                 'status' => Response::HTTP_OK,
-                'texts' => [],
+                'translations' => $this->translationService->bulkTranslate($fields, $targetLanguage, $sourceLanguage),
             ];
-
-            foreach ($targetLanguages as $targetLanguage) {
-                $payload['texts'][$targetLanguage] = $this->translator->translate(
-                    $text,
-                    $targetLanguage,
-                    $sourceLanguage
-                );
-            }
         } catch (Exception $exception) {
             $payload = [
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -64,6 +89,6 @@ class DefaultController extends FrontendController
         $jsonRequestData = json_decode($request->getContent(), true);
         $requestData = $jsonRequestData ? $jsonRequestData : $request->request->all();
 
-        return (array) $requestData;
+        return (array)$requestData;
     }
 }

@@ -9,7 +9,7 @@ Each translation have to be triggered manually for each language and field. This
 ----------
 
 ## Installation
-1. Install the bundle using ``composer require basilicom/field-translator-bundle``
+1. Install the bundle using ``composer require basilicom/pimcore-field-translator-bundle``
 2. Execute ``bin/console pimcore:bundle:enable BasilicomFieldTranslatorBundle``
 
 ## Configuration
@@ -21,6 +21,15 @@ basilicom_field_translator:
     apiKey: "<- the API key->"
 
 ```
+
+----------
+
+## Upcoming
+* bulk translation of all fields inside a localized fields section
+* translation caching to reduce API requests
+* menu item to configure provider, API key and source language
+* translate-button for WYSIWYG editables
+* tool to drag and drop documents/dataObjects and auto translate all
 
 ----------
 

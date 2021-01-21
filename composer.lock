@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "104b912dd57667f2e2828ce86838b641",
+    "content-hash": "d5c301de576862607d112914922b9882",
     "packages": [
         {
             "name": "amnuts/opcache-gui",
@@ -1938,6 +1938,7 @@
                 "facebook",
                 "sdk"
             ],
+            "abandoned": true,
             "time": "2018-12-11T22:56:31+00:00"
         },
         {
@@ -5973,6 +5974,7 @@
                 "two-factor",
                 "two-step"
             ],
+            "abandoned": "scheb/2fa-bundle",
             "time": "2020-02-15T12:44:59+00:00"
         },
         {
@@ -6174,6 +6176,7 @@
                     "type": "github"
                 }
             ],
+            "abandoned": true,
             "time": "2021-02-15T19:23:18+00:00"
         },
         {
@@ -6245,6 +6248,7 @@
                     "type": "tidelift"
                 }
             ],
+            "abandoned": "symfony/mailer",
             "time": "2021-03-09T12:30:35+00:00"
         },
         {

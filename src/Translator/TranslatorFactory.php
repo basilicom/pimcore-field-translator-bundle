@@ -13,7 +13,6 @@ class TranslatorFactory
     public const DEEP_L = 'DeepL';
 
     private $strategy;
-
     private $translatorConfig;
 
     public function __construct(string $strategy, array $translatorConfig)

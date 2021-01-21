@@ -2,3 +2,7 @@
 vendor
 .phpunit*
 _output
+node_modules
+entrypoints.json
+manifest.json
+package-lock.json

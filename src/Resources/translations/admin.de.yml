@@ -1,0 +1,7 @@
+tabTranslatorButton:
+  sourceTabInfo: "Die Felder in diesem Tab werden zum füllen der anderen Sprachen genutzt."
+  idle: "Alle Felder übersetzen und befüllen (Quelle: %locale)"
+  pending: "Felder werden übersetzt..."
+
+fieldTranslatorButton:
+  idle: "Feldinhalt in %locale übersetzen."
