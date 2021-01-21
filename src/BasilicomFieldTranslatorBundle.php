@@ -11,6 +11,7 @@ class BasilicomFieldTranslatorBundle extends AbstractPimcoreBundle
         return [
             '/bundles/basilicomfieldtranslator/js/pimcore/startup.js',
             '/bundles/basilicomfieldtranslator/js/pimcore/object/helper.js',
+            '/bundles/basilicomfieldtranslator/js/pimcore/object/tags/localizedfields.js',
             '/bundles/basilicomfieldtranslator/js/pimcore/object/tags/input.js',
             '/bundles/basilicomfieldtranslator/js/pimcore/object/tags/textarea.js',
         ];

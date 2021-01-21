@@ -25,7 +25,7 @@ class DefaultController extends FrontendController
      *
      * @return JsonResponse
      */
-    public function indexAction(Request $request)
+    public function translate(Request $request)
     {
         $requestData = $this->getRequestData($request);
         $text = (string) $requestData['text'];
@@ -52,6 +52,47 @@ class DefaultController extends FrontendController
                 'errorMessage' => $exception->getMessage(),
             ];
         }
+
+        return parent::json($payload, $payload['status'], ['Content-Type' => 'application/json; charset=utf-8']);
+    }
+
+    /**
+     * @Route("/basilicom/field-translator/bulk-translate", methods={"POST"})
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function bulkTranslate(Request $request)
+    {
+        $requestData = $this->getRequestData($request);
+        $fields = (array) $requestData['fields'];
+        $sourceLanguage = (string) $requestData['sourceLanguage'];
+        $targetLanguages = (array) $requestData['targetLanguages'];
+        $payload = [
+            'status' => Response::HTTP_OK,
+            'fields' => $fields,
+        ];
+
+//        try {
+//            $payload = [
+//                'status' => Response::HTTP_OK,
+//                'texts' => [],
+//            ];
+//
+//            foreach ($targetLanguages as $targetLanguage) {
+//                $payload['texts'][$targetLanguage] = $this->translator->translate(
+//                    $text,
+//                    $targetLanguage,
+//                    $sourceLanguage
+//                );
+//            }
+//        } catch (Exception $exception) {
+//            $payload = [
+//                'status' => Response::HTTP_BAD_REQUEST,
+//                'errorCode' => $exception->getMessage(),
+//                'errorMessage' => $exception->getMessage(),
+//            ];
+//        }
 
         return parent::json($payload, $payload['status'], ['Content-Type' => 'application/json; charset=utf-8']);
     }
