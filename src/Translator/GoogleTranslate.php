@@ -21,14 +21,22 @@ class GoogleTranslate implements Translator
     public function translate(string $text, string $targetLanguage, string $sourceLanguage = ''): string
     {
         try {
-            $result = $this->translationService->translate($text, [
-                'target' => strtolower($targetLanguage),
-                'source' => strtolower($sourceLanguage)
-            ]);
+            $result = $this->translationService->translate(
+                $text,
+                [
+                    'target' => strtolower($targetLanguage),
+                    'source' => strtolower($sourceLanguage)
+                ]
+            );
         } catch (Exception $exception) {
             throw new Exception('Error requesting API: ' . $exception->getMessage(), $exception->getCode());
         }
 
         return $result ? $result['text'] : $text;
+    }
+
+    public function bulkTranslate(array $texts, string $targetLanguage, string $sourceLanguage = ''): array
+    {
+        throw new Exception('Not implemented yet.');
     }
 }

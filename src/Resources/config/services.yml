@@ -5,12 +5,14 @@ services:
     public: false
 
   Basilicom\FieldTranslatorBundle\Controller\DefaultController:
-    arguments: ['@Basilicom\FieldTranslatorBundle\Translator\Translator']
     public: true
-    tags: ['controller.service_arguments']
-
-  Basilicom\FieldTranslatorBundle\Translator\TranslatorFactory: ~
+    tags: [ 'controller.service_arguments' ]
 
   Basilicom\FieldTranslatorBundle\Translator\Translator:
     # the first argument is the class and the second argument is the static method
-    factory: ['@Basilicom\FieldTranslatorBundle\Translator\TranslatorFactory', 'createTranslator']
+    factory: [ '@Basilicom\FieldTranslatorBundle\Translator\TranslatorFactory', 'createTranslator' ]
+
+  Basilicom\FieldTranslatorBundle\Translator\TranslatorFactory: ~
+
+  Basilicom\FieldTranslatorBundle\Translator\TranslationService:
+    arguments: [ '@Basilicom\FieldTranslatorBundle\Translator\Translator' ]
