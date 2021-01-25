@@ -30,39 +30,40 @@ pimcore.object.basilicom.addPanelTranslationButton = function (localizedFieldPan
     return null;
   }
 
-  function getComponentValues(tabPanel) {
+  function getComponentValues(localizedField) {
     let componentValues = {};
-    tabPanel.query('component').forEach(function (component) {
-      if (typeof component.getValue !== 'undefined') {
-        componentValues[component.id] = component.getValue();
-      } else {
-        let ckEditor = getCkEditorInstance(component.id);
-        if (ckEditor) {
-          componentValues[component.id] = ckEditor.getData();
+
+    Object.keys(localizedField.languageElements).forEach((language) => {
+      componentValues[language] = {};
+      localizedField.languageElements[language].forEach((component) => {
+        if (component.component.inputType !== 'password') {
+          componentValues[language][component.component.id] = component.getValue();
         }
-      }
+      });
     });
 
     return componentValues;
   }
 
   const onSubmit = function (tabPanel) {
-    pimcore.object.basilicom.bulkTranslate(getComponentValues(tabPanel), sourceLanguage, [targetLanguage], function (resultData) {
-      Object.keys(resultData.fields).forEach(function (fieldId) {
-        let components = Ext.ComponentQuery.query('component#' + fieldId);
-        if (components.length > 0) {
-          let component = components[0];
-          let value = resultData.fields[fieldId];
+    let objectId = context.objectId;
+    let myObject = pimcore.globalmanager.get('object_' + objectId);
+    pimcore.object.basilicom.bulkTranslate(getComponentValues(myObject.edit.dataFields.localizedfields), sourceLanguage, [targetLanguage], function (resultData) {
+      Object.keys(resultData.fields).forEach((language) => {
+        Object.keys(resultData.fields[language]).forEach(function (fieldId) {
+          let components = Ext.ComponentQuery.query('component#' + fieldId);
+          if (components.length > 0) {
+            let component = components[0];
+            let value = resultData.fields[language][fieldId];
 
-          if ((typeof component.setValue !== 'undefined') && component.inputType !== 'password') {
-            component.setValue(value);
-          } else {
-            let ckEditor = getCkEditorInstance(component.id);
-            if (ckEditor) {
-              ckEditor.setData(value);
+            if ((typeof component.setValue !== 'undefined') && component.inputType !== 'password') {
+              component.setValue(value);
+            } else {
+              let ckEditor = getCkEditorInstance(component.id);
+              if (ckEditor) ckEditor.setData(value);
             }
           }
-        }
+        });
       });
     });
   }
@@ -70,6 +71,7 @@ pimcore.object.basilicom.addPanelTranslationButton = function (localizedFieldPan
   var submitButton = new Ext.Button({text: 'Translate fields', handler: onSubmit});
   localizedFieldPanel.on('afterlayout', function (element) {
     let tabPanel = element.query('tabpanel');
+    // todo ==> get active locale
     if (tabPanel.length > 0) {
       let activeTabPanel = tabPanel[0].activeTab;
 

@@ -29,22 +29,15 @@ class DefaultController extends FrontendController
     {
         $requestData = $this->getRequestData($request);
         $text = (string) $requestData['text'];
-        $sourceLanguage = (string) $requestData['sourceLanguage'];
-        $targetLanguages = (array) $requestData['targetLanguages'];
+        $targetLanguage = (string) $requestData['targetLanguage'];
 
         try {
             $payload = [
                 'status' => Response::HTTP_OK,
-                'texts' => [],
+                'texts' => [
+                    $targetLanguage => $this->translator->translate($text, $targetLanguage)
+                ],
             ];
-
-            foreach ($targetLanguages as $targetLanguage) {
-                $payload['texts'][$targetLanguage] = $this->translator->translate(
-                    $text,
-                    $targetLanguage,
-                    $sourceLanguage
-                );
-            }
         } catch (Exception $exception) {
             $payload = [
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -66,8 +59,6 @@ class DefaultController extends FrontendController
     {
         $requestData = $this->getRequestData($request);
         $fields = (array) $requestData['fields'];
-        $sourceLanguage = (string) $requestData['sourceLanguage'];
-        $targetLanguages = (array) $requestData['targetLanguages'];
         $payload = [
             'status' => Response::HTTP_OK,
             'fields' => $fields,
