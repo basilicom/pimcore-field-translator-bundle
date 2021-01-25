@@ -1,4 +1,4 @@
-pimcore.registerNS("pimcore.object.basilicom.addFieldTranslationButton");
+pimcore.registerNS('pimcore.object.basilicom.addFieldTranslationButton');
 pimcore.object.basilicom.addFieldTranslationButton = function (element, context) {
   element.bodyEl.setStyle('position', 'relative');
 
@@ -16,40 +16,59 @@ pimcore.object.basilicom.addFieldTranslationButton = function (element, context)
   });
 };
 
-pimcore.registerNS("pimcore.object.basilicom.addPanelTranslationButton");
+pimcore.registerNS('pimcore.object.basilicom.addPanelTranslationButton');
 pimcore.object.basilicom.addPanelTranslationButton = function (localizedFieldPanel, context) {
   const sourceLanguage = ''; // autodiscover
   const targetLanguage = 'de'; // todo
 
-  // let objectId = context.objectId;
-  // let myObject = pimcore.globalmanager.get('object_' + objectId);
-  //
-  // console.log(myObject.edit.dataFields.localizedfields);
-  // console.log(myObject.edit.dataFields.localizedfields.getValue());
+  function getCkEditorInstance(componentId) {
+    let editorElement = document.querySelector('#' + componentId + ' .cke_editable');
+    if (editorElement !== null) {
+      return CKEDITOR.instances[editorElement.id];
+    }
 
-  const onSubmit = function (tabPanel) {
+    return null;
+  }
+
+  function getComponentValues(tabPanel) {
     let componentValues = {};
-
-    tabPanel.query('component').forEach((component) => {
-      if (typeof component.getValue !== "undefined") {
-        console.log(component);
+    tabPanel.query('component').forEach(function (component) {
+      if (typeof component.getValue !== 'undefined') {
         componentValues[component.id] = component.getValue();
       } else {
-        let editorElement = document.querySelector('#' + component.id + ' .cke_editable');
-        if (editorElement !== null) {
-          componentValues[component.id] = CKEDITOR.instances[editorElement.id].getData();
+        let ckEditor = getCkEditorInstance(component.id);
+        if (ckEditor) {
+          componentValues[component.id] = ckEditor.getData();
         }
       }
     });
 
-    pimcore.object.basilicom.bulkTranslate(componentValues, sourceLanguage, [targetLanguage], function (resultData) {
-      console.log(resultData);
-      // element.setValue(resultData.texts[targetLanguage]);
+    return componentValues;
+  }
+
+  const onSubmit = function (tabPanel) {
+    pimcore.object.basilicom.bulkTranslate(getComponentValues(tabPanel), sourceLanguage, [targetLanguage], function (resultData) {
+      Object.keys(resultData.fields).forEach(function (fieldId) {
+        let components = Ext.ComponentQuery.query('component#' + fieldId);
+        if (components.length > 0) {
+          let component = components[0];
+          let value = resultData.fields[fieldId];
+
+          if ((typeof component.setValue !== 'undefined') && component.inputType !== 'password') {
+            component.setValue(value);
+          } else {
+            let ckEditor = getCkEditorInstance(component.id);
+            if (ckEditor) {
+              ckEditor.setData(value);
+            }
+          }
+        }
+      });
     });
   }
 
   var submitButton = new Ext.Button({text: 'Translate fields', handler: onSubmit});
-  localizedFieldPanel.on("afterlayout", (element) => {
+  localizedFieldPanel.on('afterlayout', function (element) {
     let tabPanel = element.query('tabpanel');
     if (tabPanel.length > 0) {
       let activeTabPanel = tabPanel[0].activeTab;
@@ -62,7 +81,7 @@ pimcore.object.basilicom.addPanelTranslationButton = function (localizedFieldPan
   return localizedFieldPanel;
 };
 
-pimcore.registerNS("pimcore.object.basilicom.translate");
+pimcore.registerNS('pimcore.object.basilicom.translate');
 pimcore.object.basilicom.translate = function (textToTranslate, sourceLanguage, targetLanguages, onSuccess) {
   if (textToTranslate.length > 0) {
     var requestConfig = {
@@ -89,7 +108,7 @@ pimcore.object.basilicom.translate = function (textToTranslate, sourceLanguage, 
   }
 };
 
-pimcore.registerNS("pimcore.object.basilicom.bulkTranslate");
+pimcore.registerNS('pimcore.object.basilicom.bulkTranslate');
 pimcore.object.basilicom.bulkTranslate = function (fields, sourceLanguage, targetLanguages, onSuccess) {
   var requestConfig = {
     method: 'POST',
