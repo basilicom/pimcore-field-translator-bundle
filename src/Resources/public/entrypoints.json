@@ -1,0 +1,12 @@
+{
+  "entrypoints": {
+    "pimcore-field-translator": {
+      "css": [
+        "/bundles/basilicomfieldtranslator/pimcore-field-translator.css"
+      ],
+      "js": [
+        "/bundles/basilicomfieldtranslator/pimcore-field-translator.js"
+      ]
+    }
+  }
+}

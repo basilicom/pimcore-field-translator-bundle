@@ -15,7 +15,7 @@
   cursor: pointer;
 }
 
-.basilicom-translator_button::before {
+.basilicom-translator_button:before {
   background: url(/bundles/basilicomfieldtranslator/img/translate-24px.svg) center center no-repeat;
   background-size: 75%;
   content: '';
@@ -23,3 +23,4 @@
   height: 100%;
   width: 100%;
 }
+

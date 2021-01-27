@@ -1,0 +1,25 @@
+.basilicom-translator_button {
+  background: #F6F6F6;
+  border: 1px solid #d0d0d0;
+  box-sizing: content-box;
+  height: 30px;
+  left: 100%;
+  margin-left: 15px;
+  position: absolute;
+  top: 0;
+  width: 30px;
+
+  &:hover {
+    background: #f0f0f0;
+    cursor: pointer;
+  }
+
+  &:before {
+    background: url(/bundles/basilicomfieldtranslator/img/translate-24px.svg) center center no-repeat;
+    background-size: 75%;
+    content: '';
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+}

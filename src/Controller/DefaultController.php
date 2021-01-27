@@ -29,14 +29,12 @@ class DefaultController extends FrontendController
     {
         $requestData = $this->getRequestData($request);
         $text = (string) $requestData['text'];
-        $targetLanguage = (string) $requestData['targetLanguage'];
+        $targetLanguage = (string) $requestData['language'];
 
         try {
             $payload = [
                 'status' => Response::HTTP_OK,
-                'texts' => [
-                    $targetLanguage => $this->translator->translate($text, $targetLanguage)
-                ],
+                'translation' => $this->translator->translate($text, $targetLanguage)
             ];
         } catch (Exception $exception) {
             $payload = [
@@ -59,9 +57,10 @@ class DefaultController extends FrontendController
     {
         $requestData = $this->getRequestData($request);
         $fields = (array) $requestData['fields'];
+        $targetLanguage = (string) $requestData['language'];
         $payload = [
             'status' => Response::HTTP_OK,
-            'fields' => $fields,
+            'translations' => $fields,
         ];
 
 //        try {
