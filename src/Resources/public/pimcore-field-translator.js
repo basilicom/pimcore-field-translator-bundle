@@ -170,9 +170,13 @@ function () {
 
     if (fieldValue.length > 0) {
       Translator_1.Translator.translate(fieldValue, this.language, function (resultData) {
-        _this.elementReference.setValue(resultData.translation);
+        _this.setValue(resultData.translation);
       });
     }
+  };
+
+  FieldTranslatorButton.prototype.setValue = function (translation) {
+    this.elementReference.setValue(translation);
   };
 
   return FieldTranslatorButton;
@@ -235,25 +239,31 @@ function () {
   };
 
   TabTranslatorButton.prototype.onSubmit = function () {
+    var _this = this;
+
     var myObject = pimcore.globalmanager.get('object_' + this.objectId);
     var languageElements = myObject.edit.dataFields.localizedfields.languageElements[this.language];
     var values = ExtJsPanelValueExtractor_1.ExtJsPanelValueExtractor.getComponentValues(languageElements);
     Translator_1.Translator.bulkTranslate(this.language, values, function (resultData) {
-      Object.keys(resultData.translations).forEach(function (fieldId) {
-        var components = Ext.ComponentQuery.query('component#' + fieldId);
+      _this.setValues(resultData.translations);
+    });
+  };
 
-        if (components.length > 0) {
-          var component = components[0];
-          var value = resultData.translations[fieldId] + '!!!';
+  TabTranslatorButton.prototype.setValues = function (translations) {
+    Object.keys(translations).forEach(function (fieldId) {
+      var components = Ext.ComponentQuery.query('component#' + fieldId);
 
-          if (typeof component.setValue !== 'undefined' && component.inputType !== 'password') {
-            component.setValue(value);
-          } else {
-            var ckEditor = CKEditorHelper_1.CKEditorHelper.getInstance(component.id);
-            if (ckEditor) ckEditor.setData(value);
-          }
+      if (components.length > 0) {
+        var component = components[0];
+        var value = translations[fieldId];
+
+        if (typeof component.setValue !== 'undefined' && component.inputType !== 'password') {
+          component.setValue(value);
+        } else {
+          var ckEditor = CKEditorHelper_1.CKEditorHelper.getInstance(component.id);
+          if (ckEditor) ckEditor.setData(value);
         }
-      });
+      }
     });
   };
 

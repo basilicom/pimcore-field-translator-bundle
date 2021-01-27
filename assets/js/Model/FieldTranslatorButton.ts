@@ -22,8 +22,12 @@ export class FieldTranslatorButton implements TranslatorButton {
         const fieldValue = this.elementReference.getValue();
         if (fieldValue.length > 0) {
             Translator.translate(fieldValue, this.language, (resultData: any) => {
-                this.elementReference.setValue(resultData.translation);
+                this.setValue(resultData.translation);
             });
         }
+    }
+
+    setValue(translation: string) {
+        this.elementReference.setValue(translation);
     }
 }

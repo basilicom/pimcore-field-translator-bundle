@@ -35,20 +35,24 @@ export class TabTranslatorButton implements TranslatorButton {
 
         const values = ExtJsPanelValueExtractor.getComponentValues(languageElements);
         Translator.bulkTranslate(this.language, values, (resultData: any) => {
-            Object.keys(resultData.translations).forEach((fieldId) => {
-                let components = Ext.ComponentQuery.query('component#' + fieldId);
-                if (components.length > 0) {
-                    let component = components[0] as Ext.form.field.IBase;
-                    let value = resultData.translations[fieldId] + '!!!';
+            this.setValues(resultData.translations);
+        });
+    }
 
-                    if ((typeof component.setValue !== 'undefined') && component.inputType !== 'password') {
-                        component.setValue(value);
-                    } else {
-                        let ckEditor = CKEditorHelper.getInstance(component.id as string);
-                        if (ckEditor) ckEditor.setData(value);
-                    }
+    setValues(translations: { [key: string]: string; }) {
+        Object.keys(translations).forEach((fieldId) => {
+            let components = Ext.ComponentQuery.query('component#' + fieldId);
+            if (components.length > 0) {
+                let component = components[0] as Ext.form.field.IBase;
+                let value = translations[fieldId];
+
+                if ((typeof component.setValue !== 'undefined') && component.inputType !== 'password') {
+                    component.setValue(value);
+                } else {
+                    let ckEditor = CKEditorHelper.getInstance(component.id as string);
+                    if (ckEditor) ckEditor.setData(value);
                 }
-            });
+            }
         });
     }
 }
