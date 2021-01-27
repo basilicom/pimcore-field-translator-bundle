@@ -16,7 +16,7 @@ Encore
   .enableTypeScriptLoader()
   .disableSingleRuntimeChunk()
 
-  .addEntry('pimcore-field-translator', './assets/js/pimcore-field-translator.js')
+  .addEntry('pimcore-field-translator', './assets/js/pimcore-field-translator.ts')
 
   .enableSourceMaps(false)
   .enableVersioning(false)

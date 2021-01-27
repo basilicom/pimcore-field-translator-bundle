@@ -18,6 +18,8 @@
     "@babel/plugin-transform-template-literals": "^7.10.5",
     "@babel/preset-env": "^7.11.0",
     "@symfony/webpack-encore": "^0.31.0",
+    "@types/ckeditor": "^4.9.10",
+    "@types/extjs": "^4.2.33",
     "autoprefixer": "^9.8.6",
     "core-js": "^3.6.5",
     "node-sass": "^4.14.1",

@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./assets/js/pimcore-field-translator.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./assets/js/pimcore-field-translator.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -128,109 +128,130 @@ module.exports = g;
 
 /***/ }),
 
-/***/ "./assets/js/Pimcore/Helper.js":
-/*!*************************************!*\
-  !*** ./assets/js/Pimcore/Helper.js ***!
-  \*************************************/
+/***/ "./assets/js/Model/FieldTranslatorButton.ts":
+/*!**************************************************!*\
+  !*** ./assets/js/Model/FieldTranslatorButton.ts ***!
+  \**************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.FieldTranslatorButton = void 0;
+
+var Translator_1 = __webpack_require__(/*! ./Translator */ "./assets/js/Model/Translator.ts");
+
+var FieldTranslatorButton =
+/** @class */
+function () {
+  function FieldTranslatorButton(language, elementReference) {
+    this.language = language;
+    this.elementReference = elementReference;
+  }
+
+  FieldTranslatorButton.prototype.addToView = function () {
+    if (this.elementReference.bodyEl && this.elementReference.bodyEl.dom) {
+      this.elementReference.bodyEl.setStyle('position', 'relative');
+      var translateButton = Ext.core.DomHelper.append(this.elementReference.bodyEl.dom, "<a class='basilicom-translator_button'></a>");
+      var buttonElement = Ext.get(translateButton);
+
+      if (typeof buttonElement !== "undefined" && typeof buttonElement.addListener !== "undefined") {
+        buttonElement.addListener("click", this.onSubmit.bind(this));
+      }
+    }
+  };
+
+  FieldTranslatorButton.prototype.onSubmit = function () {
+    var _this = this;
+
+    var fieldValue = this.elementReference.getValue();
+
+    if (fieldValue.length > 0) {
+      Translator_1.Translator.translate(fieldValue, this.language, function (resultData) {
+        _this.elementReference.setValue(resultData.translation);
+      });
+    }
+  };
+
+  return FieldTranslatorButton;
+}();
+
+exports.FieldTranslatorButton = FieldTranslatorButton;
+
+/***/ }),
+
+/***/ "./assets/js/Model/TabTranslatorButton.ts":
+/*!************************************************!*\
+  !*** ./assets/js/Model/TabTranslatorButton.ts ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 __webpack_require__(/*! core-js/modules/es.array.for-each.js */ "./node_modules/core-js/modules/es.array.for-each.js");
 
 __webpack_require__(/*! core-js/modules/es.object.keys.js */ "./node_modules/core-js/modules/es.object.keys.js");
 
-__webpack_require__(/*! core-js/modules/es.object.to-string.js */ "./node_modules/core-js/modules/es.object.to-string.js");
-
-__webpack_require__(/*! core-js/modules/es.promise.js */ "./node_modules/core-js/modules/es.promise.js");
-
 __webpack_require__(/*! core-js/modules/web.dom-collections.for-each.js */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
 
-// Field Translator
-pimcore.registerNS('pimcore.object.basilicom.addFieldTranslationButton');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TabTranslatorButton = void 0;
 
-pimcore.object.basilicom.addFieldTranslationButton = function (element, context) {
-  element.bodyEl.setStyle('position', 'relative');
-  var translateButton = Ext.core.DomHelper.append(element.bodyEl.dom, '<a class="basilicom-translator_button"></a>');
-  Ext.get(translateButton).addListener('click', function () {
-    var targetLanguage = context.language;
-    var textToTranslate = element.getValue();
+var Translator_1 = __webpack_require__(/*! ./Translator */ "./assets/js/Model/Translator.ts");
 
-    if (textToTranslate.length > 0) {
-      pimcore.object.basilicom.translate(textToTranslate, targetLanguage, function (resultData) {
-        element.setValue(resultData.translation);
+var ExtJsPanelValueExtractor_1 = __webpack_require__(/*! ../Util/ExtJsPanelValueExtractor */ "./assets/js/Util/ExtJsPanelValueExtractor.ts");
+
+var CKEditorHelper_1 = __webpack_require__(/*! ../Util/CKEditorHelper */ "./assets/js/Util/CKEditorHelper.ts");
+
+var TabTranslatorButton =
+/** @class */
+function () {
+  function TabTranslatorButton(language, elementReference, objectId) {
+    this.language = language;
+    this.elementReference = elementReference;
+    this.objectId = objectId;
+  }
+
+  TabTranslatorButton.prototype.addToView = function () {
+    var _this = this;
+
+    if (this.elementReference.query && this.elementReference.query('tabpanel').length > 0) {
+      var tabPanel = this.elementReference.query('tabpanel')[0];
+      tabPanel.items.items.forEach(function (tabPanelPanel) {
+        // @ts-ignore
+        var submitButton = new Ext.Button({
+          text: 'Translate fields',
+          handler: _this.onSubmit.bind(_this)
+        });
+        tabPanelPanel.insert(0, submitButton);
       });
     }
-  });
-}; // Translate
-
-
-pimcore.registerNS('pimcore.object.basilicom.translate');
-
-pimcore.object.basilicom.translate = function (textToTranslate, language, onSuccess) {
-  if (textToTranslate.length > 0) {
-    var requestConfig = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        'text': textToTranslate,
-        'language': language
-      })
-    };
-    fetch('/basilicom/field-translator/translate', requestConfig).then(function (response) {
-      return response.json();
-    }).then(function (resultData) {
-      if (resultData.status === 200) {
-        onSuccess(resultData);
-      } else {
-        Ext.MessageBox.alert('Error #' + resultData.errorCode, resultData.errorMessage);
-      }
-    });
-  }
-}; // Tab Translator
-
-
-pimcore.registerNS('pimcore.object.basilicom.addPanelTranslationButton');
-
-pimcore.object.basilicom.addPanelTranslationButton = function (localizedFieldPanel, context) {
-  var getCkEditorInstance = function getCkEditorInstance(componentId) {
-    var editorElement = document.querySelector('#' + componentId + ' .cke_editable');
-
-    if (editorElement !== null) {
-      return CKEDITOR.instances[editorElement.id];
-    }
-
-    return null;
   };
 
-  var getComponentValues = function getComponentValues(fields) {
-    var componentValues = {};
-    fields.forEach(function (component) {
-      if (component.component.inputType !== 'password') {
-        componentValues[component.component.id] = component.getValue();
-      }
-    });
-    return componentValues;
-  };
-
-  var targetLanguage = 'en'; // todo ==> maybe get input ids and check
-
-  var onSubmit = function onSubmit(tabPanel) {
-    var myObject = pimcore.globalmanager.get('object_' + context.objectId);
-    var values = getComponentValues(myObject.edit.dataFields.localizedfields.languageElements[targetLanguage]);
-    pimcore.object.basilicom.bulkTranslate(values, targetLanguage, function (resultData) {
+  TabTranslatorButton.prototype.onSubmit = function () {
+    var myObject = pimcore.globalmanager.get('object_' + this.objectId);
+    var languageElements = myObject.edit.dataFields.localizedfields.languageElements[this.language];
+    var values = ExtJsPanelValueExtractor_1.ExtJsPanelValueExtractor.getComponentValues(languageElements);
+    Translator_1.Translator.bulkTranslate(this.language, values, function (resultData) {
       Object.keys(resultData.translations).forEach(function (fieldId) {
         var components = Ext.ComponentQuery.query('component#' + fieldId);
 
         if (components.length > 0) {
           var component = components[0];
-          var value = resultData.translations[fieldId];
+          var value = resultData.translations[fieldId] + '!!!';
 
           if (typeof component.setValue !== 'undefined' && component.inputType !== 'password') {
             component.setValue(value);
           } else {
-            var ckEditor = getCkEditorInstance(component.id);
+            var ckEditor = CKEditorHelper_1.CKEditorHelper.getInstance(component.id);
             if (ckEditor) ckEditor.setData(value);
           }
         }
@@ -238,66 +259,118 @@ pimcore.object.basilicom.addPanelTranslationButton = function (localizedFieldPan
     });
   };
 
-  var submitButton = new Ext.Button({
-    text: 'Translate fields',
-    handler: onSubmit
-  });
-  localizedFieldPanel.on('afterlayout', function (element) {
-    var tabPanel = element.query('tabpanel'); // todo ==> get active locale
+  return TabTranslatorButton;
+}();
 
-    if (tabPanel.length > 0) {
-      var activeTabPanel = tabPanel[0].activeTab;
-      submitButton.handler = onSubmit.bind(this, activeTabPanel);
-      activeTabPanel.insert(0, submitButton);
-    }
-  });
-  return localizedFieldPanel;
-}; // Bulk Translate
-
-
-pimcore.registerNS('pimcore.object.basilicom.bulkTranslate');
-
-pimcore.object.basilicom.bulkTranslate = function (fields, language, onSuccess) {
-  var requestConfig = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      'fields': fields,
-      'language': language
-    })
-  };
-  fetch('/basilicom/field-translator/bulk-translate', requestConfig).then(function (response) {
-    return response.json();
-  }).then(function (resultData) {
-    if (resultData.status === 200) {
-      onSuccess(resultData);
-    } else {
-      Ext.MessageBox.alert('Error #' + resultData.errorCode, resultData.errorMessage);
-    }
-  });
-};
+exports.TabTranslatorButton = TabTranslatorButton;
 
 /***/ }),
 
-/***/ "./assets/js/Pimcore/Tags/Input.js":
+/***/ "./assets/js/Model/Translator.ts":
+/*!***************************************!*\
+  !*** ./assets/js/Model/Translator.ts ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! core-js/modules/es.object.to-string.js */ "./node_modules/core-js/modules/es.object.to-string.js");
+
+__webpack_require__(/*! core-js/modules/es.promise.js */ "./node_modules/core-js/modules/es.promise.js");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Translator = void 0;
+
+var Translator =
+/** @class */
+function () {
+  function Translator() {}
+
+  Translator.bulkTranslate = function (language, fields, onSuccess) {
+    var requestConfig = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fields: fields,
+        language: language
+      })
+    };
+    fetch(this.bulkTranslateUrl, requestConfig).then(function (response) {
+      return response.json();
+    }).then(function (resultData) {
+      if (resultData.status === 200) {
+        onSuccess(resultData);
+      } else {
+        Ext.MessageBox.alert("Error #" + resultData.errorCode, resultData.errorMessage);
+      }
+    });
+  };
+
+  Translator.translate = function (text, language, onSuccess) {
+    if (text.length > 0) {
+      var requestConfig = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          text: text,
+          language: language
+        })
+      };
+      fetch(this.translateUrl, requestConfig).then(function (response) {
+        return response.json();
+      }).then(function (resultData) {
+        if (resultData.status === 200) {
+          onSuccess(resultData);
+        } else {
+          Ext.MessageBox.alert("Error #" + resultData.errorCode, resultData.errorMessage);
+        }
+      });
+    }
+  };
+
+  Translator.translateUrl = "/basilicom/field-translator/translate";
+  Translator.bulkTranslateUrl = "/basilicom/field-translator/bulk-translate";
+  return Translator;
+}();
+
+exports.Translator = Translator;
+
+/***/ }),
+
+/***/ "./assets/js/Pimcore/Tags/Input.ts":
 /*!*****************************************!*\
-  !*** ./assets/js/Pimcore/Tags/Input.js ***!
+  !*** ./assets/js/Pimcore/Tags/Input.ts ***!
   \*****************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-// todo => disable button if input is empty
-// todo => disable button if value changed by ajax response and not changed
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var FieldTranslatorButton_1 = __webpack_require__(/*! ../../Model/FieldTranslatorButton */ "./assets/js/Model/FieldTranslatorButton.ts");
+
 pimcore.object.tags.input = Class.create(pimcore.object.tags.input, {
   getLayoutEdit: function getLayoutEdit($super) {
     var panelElement = $super();
     var context = this.context;
 
-    if (context && context.hasOwnProperty('containerType') && context.containerType === 'localizedfield') {
+    if (context && context.hasOwnProperty("containerType") && context.containerType === "localizedfield") {
+      var language_1 = context.language;
       panelElement.on("afterrender", function (element) {
-        pimcore.object.basilicom.addFieldTranslationButton(element, context);
+        var fieldTranslatorButton = new FieldTranslatorButton_1.FieldTranslatorButton(language_1, element);
+        fieldTranslatorButton.addToView();
       });
     }
 
@@ -307,40 +380,64 @@ pimcore.object.tags.input = Class.create(pimcore.object.tags.input, {
 
 /***/ }),
 
-/***/ "./assets/js/Pimcore/Tags/LocalizedFields.js":
+/***/ "./assets/js/Pimcore/Tags/LocalizedFields.ts":
 /*!***************************************************!*\
-  !*** ./assets/js/Pimcore/Tags/LocalizedFields.js ***!
+  !*** ./assets/js/Pimcore/Tags/LocalizedFields.ts ***!
   \***************************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var TabTranslatorButton_1 = __webpack_require__(/*! ../../Model/TabTranslatorButton */ "./assets/js/Model/TabTranslatorButton.ts");
 
 pimcore.object.tags.localizedfields = Class.create(pimcore.object.tags.localizedfields, {
   getLayoutEdit: function getLayoutEdit($super) {
     var panelElement = $super();
-    pimcore.object.basilicom.addPanelTranslationButton(panelElement, this.context);
+    var context = this.context;
+    panelElement.on("afterrender", function (panel) {
+      var language = "en"; // todo!
+
+      var translatorButton = new TabTranslatorButton_1.TabTranslatorButton(language, panel, context.objectId);
+      translatorButton.addToView();
+    });
     return panelElement;
   }
 });
 
 /***/ }),
 
-/***/ "./assets/js/Pimcore/Tags/Textarea.js":
+/***/ "./assets/js/Pimcore/Tags/Textarea.ts":
 /*!********************************************!*\
-  !*** ./assets/js/Pimcore/Tags/Textarea.js ***!
+  !*** ./assets/js/Pimcore/Tags/Textarea.ts ***!
   \********************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-// todo => disable button if input is empty
-// todo => disable button if value changed by ajax response and not changed
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var FieldTranslatorButton_1 = __webpack_require__(/*! ../../Model/FieldTranslatorButton */ "./assets/js/Model/FieldTranslatorButton.ts");
+
 pimcore.object.tags.textarea = Class.create(pimcore.object.tags.textarea, {
   getLayoutEdit: function getLayoutEdit($super) {
     var panelElement = $super();
     var context = this.context;
 
-    if (context && context.hasOwnProperty('containerType') && context.containerType === 'localizedfield') {
+    if (context && context.hasOwnProperty("containerType") && context.containerType === "localizedfield") {
+      var language_1 = context.language;
       panelElement.on("afterrender", function (element) {
-        pimcore.object.basilicom.addFieldTranslationButton(element, context);
+        var fieldTranslatorButton = new FieldTranslatorButton_1.FieldTranslatorButton(language_1, element);
+        fieldTranslatorButton.addToView();
       });
     }
 
@@ -350,26 +447,120 @@ pimcore.object.tags.textarea = Class.create(pimcore.object.tags.textarea, {
 
 /***/ }),
 
-/***/ "./assets/js/pimcore-field-translator.js":
-/*!***********************************************!*\
-  !*** ./assets/js/pimcore-field-translator.js ***!
-  \***********************************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ "./assets/js/Util/CKEditorHelper.ts":
+/*!******************************************!*\
+  !*** ./assets/js/Util/CKEditorHelper.ts ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _css_pimcore_field_translator_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../css/pimcore-field-translator.scss */ "./assets/css/pimcore-field-translator.scss");
-/* harmony import */ var _css_pimcore_field_translator_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_pimcore_field_translator_scss__WEBPACK_IMPORTED_MODULE_0__);
 
 
-__webpack_require__(/*! ./Pimcore/Helper.js */ "./assets/js/Pimcore/Helper.js");
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CKEditorHelper = void 0;
 
-__webpack_require__(/*! ./Pimcore/Tags/LocalizedFields.js */ "./assets/js/Pimcore/Tags/LocalizedFields.js");
+var CKEditorHelper =
+/** @class */
+function () {
+  function CKEditorHelper() {}
 
-__webpack_require__(/*! ./Pimcore/Tags/Input.js */ "./assets/js/Pimcore/Tags/Input.js");
+  CKEditorHelper.getInstance = function (componentId) {
+    var editorElement = document.querySelector('#' + componentId + ' .cke_editable');
+    return editorElement !== null ? CKEDITOR.instances[editorElement.id] : null;
+  };
 
-__webpack_require__(/*! ./Pimcore/Tags/Textarea.js */ "./assets/js/Pimcore/Tags/Textarea.js");
+  return CKEditorHelper;
+}();
+
+exports.CKEditorHelper = CKEditorHelper;
+
+/***/ }),
+
+/***/ "./assets/js/Util/ExtJsPanelValueExtractor.ts":
+/*!****************************************************!*\
+  !*** ./assets/js/Util/ExtJsPanelValueExtractor.ts ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! core-js/modules/es.array.for-each.js */ "./node_modules/core-js/modules/es.array.for-each.js");
+
+__webpack_require__(/*! core-js/modules/es.object.assign.js */ "./node_modules/core-js/modules/es.object.assign.js");
+
+__webpack_require__(/*! core-js/modules/web.dom-collections.for-each.js */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+
+var __assign = this && this.__assign || function () {
+  __assign = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+
+      for (var p in s) {
+        if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+      }
+    }
+
+    return t;
+  };
+
+  return __assign.apply(this, arguments);
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ExtJsPanelValueExtractor = void 0;
+
+var ExtJsPanelValueExtractor =
+/** @class */
+function () {
+  function ExtJsPanelValueExtractor() {}
+
+  ExtJsPanelValueExtractor.getComponentValues = function (fields) {
+    var componentValues = {};
+    fields.forEach(function (component) {
+      var _a;
+
+      if (component.component.inputType !== 'password') {
+        componentValues = __assign(__assign({}, componentValues), (_a = {}, _a[component.component.id] = component.getValue(), _a));
+      }
+    });
+    return componentValues;
+  };
+
+  return ExtJsPanelValueExtractor;
+}();
+
+exports.ExtJsPanelValueExtractor = ExtJsPanelValueExtractor;
+
+/***/ }),
+
+/***/ "./assets/js/pimcore-field-translator.ts":
+/*!***********************************************!*\
+  !*** ./assets/js/pimcore-field-translator.ts ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+__webpack_require__(/*! ../css/pimcore-field-translator.scss */ "./assets/css/pimcore-field-translator.scss");
+
+__webpack_require__(/*! ./Pimcore/Tags/LocalizedFields.ts */ "./assets/js/Pimcore/Tags/LocalizedFields.ts");
+
+__webpack_require__(/*! ./Pimcore/Tags/Input.ts */ "./assets/js/Pimcore/Tags/Input.ts");
+
+__webpack_require__(/*! ./Pimcore/Tags/Textarea.ts */ "./assets/js/Pimcore/Tags/Textarea.ts");
 
 /***/ }),
 
@@ -1783,6 +1974,70 @@ module.exports.f = function (C) {
 
 /***/ }),
 
+/***/ "./node_modules/core-js/internals/object-assign.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/core-js/internals/object-assign.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var DESCRIPTORS = __webpack_require__(/*! ../internals/descriptors */ "./node_modules/core-js/internals/descriptors.js");
+var fails = __webpack_require__(/*! ../internals/fails */ "./node_modules/core-js/internals/fails.js");
+var objectKeys = __webpack_require__(/*! ../internals/object-keys */ "./node_modules/core-js/internals/object-keys.js");
+var getOwnPropertySymbolsModule = __webpack_require__(/*! ../internals/object-get-own-property-symbols */ "./node_modules/core-js/internals/object-get-own-property-symbols.js");
+var propertyIsEnumerableModule = __webpack_require__(/*! ../internals/object-property-is-enumerable */ "./node_modules/core-js/internals/object-property-is-enumerable.js");
+var toObject = __webpack_require__(/*! ../internals/to-object */ "./node_modules/core-js/internals/to-object.js");
+var IndexedObject = __webpack_require__(/*! ../internals/indexed-object */ "./node_modules/core-js/internals/indexed-object.js");
+
+var nativeAssign = Object.assign;
+var defineProperty = Object.defineProperty;
+
+// `Object.assign` method
+// https://tc39.es/ecma262/#sec-object.assign
+module.exports = !nativeAssign || fails(function () {
+  // should have correct order of operations (Edge bug)
+  if (DESCRIPTORS && nativeAssign({ b: 1 }, nativeAssign(defineProperty({}, 'a', {
+    enumerable: true,
+    get: function () {
+      defineProperty(this, 'b', {
+        value: 3,
+        enumerable: false
+      });
+    }
+  }), { b: 2 })).b !== 1) return true;
+  // should work with symbols and should have deterministic property order (V8 bug)
+  var A = {};
+  var B = {};
+  // eslint-disable-next-line no-undef
+  var symbol = Symbol();
+  var alphabet = 'abcdefghijklmnopqrst';
+  A[symbol] = 7;
+  alphabet.split('').forEach(function (chr) { B[chr] = chr; });
+  return nativeAssign({}, A)[symbol] != 7 || objectKeys(nativeAssign({}, B)).join('') != alphabet;
+}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+  var T = toObject(target);
+  var argumentsLength = arguments.length;
+  var index = 1;
+  var getOwnPropertySymbols = getOwnPropertySymbolsModule.f;
+  var propertyIsEnumerable = propertyIsEnumerableModule.f;
+  while (argumentsLength > index) {
+    var S = IndexedObject(arguments[index++]);
+    var keys = getOwnPropertySymbols ? objectKeys(S).concat(getOwnPropertySymbols(S)) : objectKeys(S);
+    var length = keys.length;
+    var j = 0;
+    var key;
+    while (length > j) {
+      key = keys[j++];
+      if (!DESCRIPTORS || propertyIsEnumerable.call(S, key)) T[key] = S[key];
+    }
+  } return T;
+} : nativeAssign;
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/internals/object-define-property.js":
 /*!******************************************************************!*\
   !*** ./node_modules/core-js/internals/object-define-property.js ***!
@@ -2628,6 +2883,25 @@ var forEach = __webpack_require__(/*! ../internals/array-for-each */ "./node_mod
 // https://tc39.es/ecma262/#sec-array.prototype.foreach
 $({ target: 'Array', proto: true, forced: [].forEach != forEach }, {
   forEach: forEach
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.object.assign.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/core-js/modules/es.object.assign.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $ = __webpack_require__(/*! ../internals/export */ "./node_modules/core-js/internals/export.js");
+var assign = __webpack_require__(/*! ../internals/object-assign */ "./node_modules/core-js/internals/object-assign.js");
+
+// `Object.assign` method
+// https://tc39.es/ecma262/#sec-object.assign
+$({ target: 'Object', stat: true, forced: Object.assign !== assign }, {
+  assign: assign
 });
 
 
