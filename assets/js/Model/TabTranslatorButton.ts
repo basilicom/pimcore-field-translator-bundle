@@ -7,27 +7,24 @@ declare const pimcore: any;
 declare const Class: any;
 
 export class TabTranslatorButton implements TranslatorButton {
-    language: string;
-    elementReference: any;
-    objectId: string | number;
-
-    constructor(language: string, elementReference: any, objectId: string | number) {
-        this.language = language;
-        this.elementReference = elementReference;
-        this.objectId = objectId;
+    constructor(
+        private language: string,
+        private elementReference: any | Ext.panel.IPanel,
+        private objectId: number
+    ) {
     }
 
     addToView() {
-        if (this.elementReference.query && this.elementReference.query('tabpanel').length > 0) {
+        if (this.elementReference.query('tabpanel').length > 0) {
             const tabPanel = (this.elementReference.query('tabpanel') as [Ext.ITabPanel])[0];
-            tabPanel.items.items.forEach((tabPanelPanel: any) => {
+            tabPanel.items.items.forEach((panel: any) => {
                 // @ts-ignore
                 const submitButton = new Ext.Button({
-                    text: 'Translate fields',
+                    text: 'Translate fields to ' + this.language,
                     handler: this.onSubmit.bind(this)
                 });
 
-                tabPanelPanel.insert(0, submitButton);
+                panel.insert(0, submitButton);
             });
         }
     }

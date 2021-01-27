@@ -154,14 +154,12 @@ function () {
   }
 
   FieldTranslatorButton.prototype.addToView = function () {
-    if (this.elementReference.bodyEl && this.elementReference.bodyEl.dom) {
-      this.elementReference.bodyEl.setStyle('position', 'relative');
-      var translateButton = Ext.core.DomHelper.append(this.elementReference.bodyEl.dom, "<a class='basilicom-translator_button'></a>");
-      var buttonElement = Ext.get(translateButton);
+    this.elementReference.bodyEl.setStyle('position', 'relative');
+    var translateButton = Ext.core.DomHelper.append(this.elementReference.bodyEl.dom, "<a class='basilicom-translator_button'></a>");
+    var buttonElement = Ext.get(translateButton);
 
-      if (typeof buttonElement !== "undefined" && typeof buttonElement.addListener !== "undefined") {
-        buttonElement.addListener("click", this.onSubmit.bind(this));
-      }
+    if (typeof buttonElement !== "undefined" && typeof buttonElement.addListener !== "undefined") {
+      buttonElement.addListener("click", this.onSubmit.bind(this));
     }
   };
 
@@ -223,15 +221,15 @@ function () {
   TabTranslatorButton.prototype.addToView = function () {
     var _this = this;
 
-    if (this.elementReference.query && this.elementReference.query('tabpanel').length > 0) {
+    if (this.elementReference.query('tabpanel').length > 0) {
       var tabPanel = this.elementReference.query('tabpanel')[0];
-      tabPanel.items.items.forEach(function (tabPanelPanel) {
+      tabPanel.items.items.forEach(function (panel) {
         // @ts-ignore
         var submitButton = new Ext.Button({
-          text: 'Translate fields',
+          text: 'Translate fields to ' + _this.language,
           handler: _this.onSubmit.bind(_this)
         });
-        tabPanelPanel.insert(0, submitButton);
+        panel.insert(0, submitButton);
       });
     }
   };

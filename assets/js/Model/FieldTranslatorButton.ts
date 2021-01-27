@@ -2,23 +2,19 @@ import {Translator} from "./Translator";
 import {TranslatorButton} from "./TranslatorButton";
 
 export class FieldTranslatorButton implements TranslatorButton {
-    language: string;
-    elementReference: any;
-
-    constructor(language: string, elementReference: any) {
-        this.language = language;
-        this.elementReference = elementReference;
+    constructor(
+        private language: string,
+        private elementReference: any | Ext.form.field.IText
+    ) {
     }
 
     addToView() {
-        if (this.elementReference.bodyEl && this.elementReference.bodyEl.dom) {
-            this.elementReference.bodyEl.setStyle('position', 'relative');
+        this.elementReference.bodyEl.setStyle('position', 'relative');
 
-            const translateButton = Ext.core.DomHelper.append(this.elementReference.bodyEl.dom, "<a class='basilicom-translator_button'></a>");
-            const buttonElement = Ext.get(translateButton);
-            if (typeof buttonElement !== "undefined" && typeof buttonElement.addListener !== "undefined") {
-                buttonElement.addListener("click", this.onSubmit.bind(this));
-            }
+        const translateButton = Ext.core.DomHelper.append(this.elementReference.bodyEl.dom, "<a class='basilicom-translator_button'></a>");
+        const buttonElement = Ext.get(translateButton);
+        if (typeof buttonElement !== "undefined" && typeof buttonElement.addListener !== "undefined") {
+            buttonElement.addListener("click", this.onSubmit.bind(this));
         }
     }
 
