@@ -72,16 +72,10 @@ class DefaultController extends FrontendController
 
             $fieldKeys = array_keys($fields);
             foreach ($targetLanguages as $targetLanguage) {
-//                $translationResult = $this->translator->bulkTranslate(
-//                    array_values($fields),
-//                    $targetLanguage,
-//                    $sourceLanguage
-//                );
-
-                $translationResult = unserialize(
-                    'a:6:{i:0;a:2:{s:24:"detected_source_language";s:2:"EN";s:4:"text";s:8:"Der Name";}i:1;a:2:{s:24:"detected_source_language";s:2:"EN";s:4:"text";s:15:"Der zweite Name";}i:2;a:2:{s:24:"detected_source_language";s:2:"EN";s:4:"text";s:25:"<p>Eine Beschreibung</p>
-";}i:3;a:2:{s:24:"detected_source_language";s:2:"EN";s:4:"text";s:18:"Mit einer Textarea";}i:4;a:2:{s:24:"detected_source_language";s:2:"EN";s:4:"text";s:45:"Und eine weitere, verschachtelte Beschreibung";}i:5;a:2:{s:24:"detected_source_language";s:2:"EN";s:4:"text";s:36:"<p>Sieh mal, ein WYSIWYG-Editor</p>
-";}}'
+                $translationResult = $this->translator->bulkTranslate(
+                    array_values($fields),
+                    $targetLanguage,
+                    $sourceLanguage
                 );
 
                 $fieldTranslations = [];
