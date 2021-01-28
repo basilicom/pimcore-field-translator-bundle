@@ -15,4 +15,14 @@ interface Translator
      * @throws Exception
      */
     public function translate(string $text, string $targetLanguage, string $sourceLanguage = ''): string;
+
+    /**
+     * @param string $text
+     * @param string $targetLanguage
+     * @param string $sourceLanguage optional - source language if available, else autodetect should be used
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function bulkTranslate(array $texts, string $targetLanguage, string $sourceLanguage = ''): array;
 }
