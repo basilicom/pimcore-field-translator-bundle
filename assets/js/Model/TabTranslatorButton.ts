@@ -15,7 +15,7 @@ export class TabTranslatorButton implements TranslatorButton {
     private sourceLanguage: string;
     private targetLanguages: [string];
     private elementReference: any | Ext.panel.IPanel;
-    private localizedFields: { [language: string]: any };
+    private languageElements: { [language: string]: any };
 
     constructor(sourceLanguage: string, targetLanguages: [string], elementReference: any | Ext.panel.IPanel, objectId: number) {
         this.sourceLanguage = sourceLanguage;
@@ -23,28 +23,41 @@ export class TabTranslatorButton implements TranslatorButton {
         this.elementReference = elementReference;
 
         const pimcoreObjectReference = pimcore.globalmanager.get('object_' + objectId);
-        this.localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields.languageElements;
-    }
+        const localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields;
 
-    addToView() {
-        if (this.elementReference.query('tabpanel').length > 0) {
-            // @ts-ignore
-            const submitButton = new Ext.Button({text: 'Translate fields', handler: this.onSubmit.bind(this)});
-            this.elementReference.insert(0, submitButton);
+        this.languageElements = {};
+        if (elementReference === localizedFields.component) {
+            this.languageElements = {...localizedFields.languageElements};
+        } else {
+            localizedFields.referencedFields.forEach((referencedField: any) => {
+                if (elementReference === referencedField.component) {
+                    this.languageElements = {...referencedField.languageElements};
+                }
+            });
         }
     }
 
-    onSubmit() {
-        const languageElements = this.localizedFields[this.sourceLanguage];
+    addToView() {
+        // @ts-ignore
+        const submitButton = new Ext.Button({text: 'Translate fields', handler: this.onSubmit.bind(this)});
+        this.elementReference.insert(0, submitButton);
+    }
 
+    onSubmit() {
         /**
+         * todo
+         *      handle multiple localized fields
+         *
          * todo
          *      Go through tabs
          *      Gather fields
          *      Call translation
          *      Timeout 500 seconds
+         *
+         * todo
+         *      translatable values should be always compared to avoid duplicated translations and lower the DeepL usage ==> cache
          */
-
+        const languageElements = this.languageElements[this.sourceLanguage];
         const values = ExtJsComponentUtil.getComponentValues(languageElements);
         Translator.bulkTranslate(this.sourceLanguage, this.targetLanguages, values, (resultData: { translations: BulkTranslationResult }) => {
             this.setValues(resultData.translations);
@@ -53,7 +66,7 @@ export class TabTranslatorButton implements TranslatorButton {
 
     setValues(translations: BulkTranslationResult) {
         Object.keys(translations).forEach((languageId) => {
-            const languageElements = this.localizedFields[languageId];
+            const languageElements = this.languageElements[languageId];
             ExtJsComponentUtil.setComponentValues(languageElements, translations[languageId]);
         });
     }
