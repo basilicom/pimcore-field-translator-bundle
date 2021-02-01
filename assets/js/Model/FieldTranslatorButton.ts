@@ -18,6 +18,11 @@ export class FieldTranslatorButton implements TranslatorButton {
         }
     }
 
+    /**
+     * todo
+     *      disable button while translating
+     *      enable button only if content of element changed
+     */
     onSubmit(): void {
         const fieldValue = this.elementReference.getValue();
         if (fieldValue.length > 0) {

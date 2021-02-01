@@ -36,10 +36,12 @@ export class ExtJsComponentUtil {
         if (typeof ckeditor === "undefined") {
             if (forceFieldOverwrite || (!forceFieldOverwrite && component.getValue().toString().length === 0)) {
                 component.setValue(translation);
+                component["__pimcore_dirty"] = true;
             }
         } else {
             if (forceFieldOverwrite || (!forceFieldOverwrite && ckeditor.getData().toString().length === 0)) {
                 ckeditor.setData(translation);
+                component["__pimcore_dirty"] = true;
             }
         }
     }

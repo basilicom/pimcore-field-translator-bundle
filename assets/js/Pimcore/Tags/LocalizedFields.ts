@@ -10,7 +10,7 @@ pimcore.object.tags.localizedfields = Class.create(pimcore.object.tags.localized
 
         panelElement.on("afterrender", (panel: Ext.panel.IPanel) => {
             const targetLanguages = [...this.frontendLanguages] as [string];
-            const sourceLanguage = targetLanguages.shift() ?? 'en';
+            const sourceLanguage = targetLanguages.shift() ?? "en";
 
             // todo ==> get all languages - get filled fields of first, active tab / main language
             // todo ==> translate for all available languages

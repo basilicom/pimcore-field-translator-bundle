@@ -16,6 +16,7 @@ export class TabTranslatorButton implements TranslatorButton {
     private targetLanguages: [string];
     private elementReference: any | Ext.panel.IPanel;
     private languageElements: { [language: string]: any };
+    private localizedFields: any;
 
     constructor(sourceLanguage: string, targetLanguages: [string], elementReference: any | Ext.panel.IPanel, objectId: number) {
         this.sourceLanguage = sourceLanguage;
@@ -23,13 +24,13 @@ export class TabTranslatorButton implements TranslatorButton {
         this.elementReference = elementReference;
 
         const pimcoreObjectReference = pimcore.globalmanager.get('object_' + objectId);
-        const localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields;
+        this.localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields;
 
         this.languageElements = {};
-        if (elementReference === localizedFields.component) {
-            this.languageElements = {...localizedFields.languageElements};
+        if (elementReference === this.localizedFields.component) {
+            this.languageElements = {...this.localizedFields.languageElements};
         } else {
-            localizedFields.referencedFields.forEach((referencedField: any) => {
+            this.localizedFields.referencedFields.forEach((referencedField: any) => {
                 if (elementReference === referencedField.component) {
                     this.languageElements = {...referencedField.languageElements};
                 }
@@ -39,35 +40,48 @@ export class TabTranslatorButton implements TranslatorButton {
 
     addToView() {
         // @ts-ignore
-        const submitButton = new Ext.Button({text: 'Translate fields', handler: this.onSubmit.bind(this)});
+        const submitButton = new Ext.Button({
+            text: 'Translate fields from "' + this.sourceLanguage + '"',
+            handler: this.onSubmit.bind(this)
+        });
         this.elementReference.insert(0, submitButton);
     }
 
+    /**
+     * todo
+     *      disable button while translating
+     *      enable button only if content of element changed
+     */
     onSubmit() {
-        /**
-         * todo
-         *      handle multiple localized fields
-         *
-         * todo
-         *      Go through tabs
-         *      Gather fields
-         *      Call translation
-         *      Timeout 500 seconds
-         *
-         * todo
-         *      translatable values should be always compared to avoid duplicated translations and lower the DeepL usage ==> cache
-         */
         const languageElements = this.languageElements[this.sourceLanguage];
         const values = ExtJsComponentUtil.getComponentValues(languageElements);
-        Translator.bulkTranslate(this.sourceLanguage, this.targetLanguages, values, (resultData: { translations: BulkTranslationResult }) => {
-            this.setValues(resultData.translations);
-        });
-    }
 
-    setValues(translations: BulkTranslationResult) {
-        Object.keys(translations).forEach((languageId) => {
-            const languageElements = this.languageElements[languageId];
-            ExtJsComponentUtil.setComponentValues(languageElements, translations[languageId]);
+        console.log("vorher", this.localizedFields.data);
+        Translator.bulkTranslate(this.sourceLanguage, this.targetLanguages, values, (resultData: { translations: BulkTranslationResult }) => {
+            // todo ==> walk over tabs and activate all once...
+            // either doLayout() on each tabs of the tabpanel
+            //
+
+            /**
+             * @todo
+             *  walk over tabs and call "doLayout()" on each tabs of the tabpanel
+             *  or set "deferredRender" to false for tabpanel!
+             */
+
+            Object.keys(resultData.translations).forEach((locale) => {
+                const fields = this.languageElements[locale];
+                const translations = resultData.translations[locale];
+
+                if (this.localizedFields.data[locale]) {
+                    this.localizedFields.data[locale] = {...this.localizedFields.data[locale], ...translations};
+                }
+
+                console.log("nachher", this.localizedFields.data);
+                ExtJsComponentUtil.setComponentValues(fields, translations);
+
+
+                // todo ==> the save command does not get the updated data!!! only after rendering the view..
+            });
         });
     }
 }
