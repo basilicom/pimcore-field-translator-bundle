@@ -56,12 +56,7 @@ export class TabTranslatorButton implements TranslatorButton {
         const languageElements = this.languageElements[this.sourceLanguage];
         const values = ExtJsComponentUtil.getComponentValues(languageElements);
 
-        console.log("vorher", this.localizedFields.data);
         Translator.bulkTranslate(this.sourceLanguage, this.targetLanguages, values, (resultData: { translations: BulkTranslationResult }) => {
-            // todo ==> walk over tabs and activate all once...
-            // either doLayout() on each tabs of the tabpanel
-            //
-
             /**
              * @todo
              *  walk over tabs and call "doLayout()" on each tabs of the tabpanel
@@ -76,11 +71,7 @@ export class TabTranslatorButton implements TranslatorButton {
                     this.localizedFields.data[locale] = {...this.localizedFields.data[locale], ...translations};
                 }
 
-                console.log("nachher", this.localizedFields.data);
                 ExtJsComponentUtil.setComponentValues(fields, translations);
-
-
-                // todo ==> the save command does not get the updated data!!! only after rendering the view..
             });
         });
     }
