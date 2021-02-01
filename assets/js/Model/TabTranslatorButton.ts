@@ -11,12 +11,38 @@ type BulkTranslationResult = {
     }
 }
 
+class Button {
+    private component: any;
+
+    constructor(private label: string, onSubmit: () => void, private disabledLabel: string = label) {
+        this.label = label;
+        this.disabledLabel = disabledLabel;
+        // @ts-ignore
+        this.component = new Ext.Button({text: label, handler: onSubmit});
+    }
+
+    enable(): void {
+        this.component.enable();
+        this.component.setText(this.label);
+    }
+
+    disable(): void {
+        this.component.disable();
+        this.component.setText(this.disabledLabel);
+    }
+
+    getComponent(): any {
+        return this.component
+    }
+}
+
 export class TabTranslatorButton implements TranslatorButton {
+    private submitButton: Button;
+
     private sourceLanguage: string;
     private targetLanguages: [string];
     private elementReference: any | Ext.panel.IPanel;
     private languageElements: { [language: string]: any };
-    private localizedFields: any;
 
     constructor(sourceLanguage: string, targetLanguages: [string], elementReference: any | Ext.panel.IPanel, objectId: number) {
         this.sourceLanguage = sourceLanguage;
@@ -24,55 +50,64 @@ export class TabTranslatorButton implements TranslatorButton {
         this.elementReference = elementReference;
 
         const pimcoreObjectReference = pimcore.globalmanager.get('object_' + objectId);
-        this.localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields;
+        const localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields;
 
         this.languageElements = {};
-        if (elementReference === this.localizedFields.component) {
-            this.languageElements = {...this.localizedFields.languageElements};
+        if (elementReference === localizedFields.component) {
+            this.languageElements = {...localizedFields.languageElements};
         } else {
-            this.localizedFields.referencedFields.forEach((referencedField: any) => {
+            localizedFields.referencedFields.forEach((referencedField: any) => {
                 if (elementReference === referencedField.component) {
                     this.languageElements = {...referencedField.languageElements};
                 }
             });
         }
-    }
 
-    addToView() {
-        // @ts-ignore
-        const submitButton = new Ext.Button({
-            text: 'Translate fields from "' + this.sourceLanguage + '"',
-            handler: this.onSubmit.bind(this)
-        });
-        this.elementReference.insert(0, submitButton);
+        this.submitButton = new Button(
+            'Translate fields from "' + this.sourceLanguage + '"',
+            this.onSubmit.bind(this),
+            'Translating tabs ...'
+        );
     }
 
     /**
-     * todo
-     *      disable button while translating
-     *      enable button only if content of element changed
+     * @todo this could be a decorator
      */
+    addToView() {
+        console.log(this.elementReference);
+
+        this.elementReference.insert(0, this.submitButton.getComponent());
+    }
+
     onSubmit() {
-        const languageElements = this.languageElements[this.sourceLanguage];
-        const values = ExtJsComponentUtil.getComponentValues(languageElements);
+        const localizedLanguageElements = this.languageElements[this.sourceLanguage];
+        const values = ExtJsComponentUtil.getComponentValues(localizedLanguageElements);
 
+        this.submitButton.disable();
         Translator.bulkTranslate(this.sourceLanguage, this.targetLanguages, values, (resultData: { translations: BulkTranslationResult }) => {
-            /**
-             * @todo
-             *  walk over tabs and call "doLayout()" on each tabs of the tabpanel
-             *  or set "deferredRender" to false for tabpanel!
-             */
-
-            Object.keys(resultData.translations).forEach((locale) => {
-                const fields = this.languageElements[locale];
-                const translations = resultData.translations[locale];
-
-                if (this.localizedFields.data[locale]) {
-                    this.localizedFields.data[locale] = {...this.localizedFields.data[locale], ...translations};
-                }
-
-                ExtJsComponentUtil.setComponentValues(fields, translations);
+            this.setValues(resultData.translations, () => {
+                this.submitButton.enable();
             });
+        });
+    }
+
+    // todo - this is ugly!
+    setValues(translations: BulkTranslationResult, onDone: Function): void {
+        const tabPanel = this.elementReference.query!('tabpanel')[0] as any;
+        const tabs = tabPanel.items.items;
+
+        tabs.forEach((item: any, key: any) => {
+            window.setTimeout(() => {
+                tabPanel.setActiveTab(key);
+
+                // todo => this is not super fail safe :/
+                const locale = Object.keys(this.languageElements)[key];
+                if (locale !== this.sourceLanguage && translations[locale]) {
+                    ExtJsComponentUtil.setComponentValues(this.languageElements[locale], translations[locale]);
+                }
+            }, 500 * key);
+
+            window.setTimeout(() => onDone(), 500 * tabs.length);
         });
     }
 }
