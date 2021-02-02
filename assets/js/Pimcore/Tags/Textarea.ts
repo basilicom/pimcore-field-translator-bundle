@@ -11,8 +11,10 @@ pimcore.object.tags.textarea = Class.create(pimcore.object.tags.textarea, {
         if (context && context.hasOwnProperty("containerType") && context.containerType === "localizedfield") {
             const language = context.language as string;
             panelElement.on("afterrender", function (element: Ext.form.field.IText) {
-                const fieldTranslatorButton = new FieldTranslatorButton(language, element);
-                fieldTranslatorButton.addToView();
+                if (element.bodyEl) {
+                    const fieldTranslatorButton = new FieldTranslatorButton(language);
+                    fieldTranslatorButton.render(element.bodyEl);
+                }
             });
         }
 

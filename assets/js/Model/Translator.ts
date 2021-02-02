@@ -2,15 +2,11 @@ export class Translator {
     private static translateUrl = "/basilicom/field-translator/translate";
     private static bulkTranslateUrl = "/basilicom/field-translator/bulk-translate";
 
-    static bulkTranslate(sourceLanguage: string, targetLanguages: [string], fields: { [key: string]: string; }, onSuccess: Function) {
+    static bulkTranslate(sourceLanguage: string, targetLanguage: string, fields: { [key: string]: string; }, onSuccess: Function) {
         const requestConfig = {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                sourceLanguage,
-                targetLanguages,
-                fields
-            }),
+            body: JSON.stringify({sourceLanguage, targetLanguage, fields}),
         };
 
         fetch(this.bulkTranslateUrl, requestConfig)

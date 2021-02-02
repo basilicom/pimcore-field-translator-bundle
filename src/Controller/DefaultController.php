@@ -62,7 +62,7 @@ class DefaultController extends FrontendController
         $requestData = $this->getRequestData($request);
         $fields = (array) $requestData['fields'];
         $sourceLanguage = (string) $requestData['sourceLanguage'];
-        $targetLanguages = (array) $requestData['targetLanguages'];
+        $targetLanguage = (string) $requestData['targetLanguage'];
 
         try {
             $payload = [
@@ -71,20 +71,31 @@ class DefaultController extends FrontendController
             ];
 
             $fieldKeys = array_keys($fields);
-            foreach ($targetLanguages as $targetLanguage) {
-                $translationResult = $this->translator->bulkTranslate(
-                    array_values($fields),
-                    $targetLanguage,
-                    $sourceLanguage
-                );
+//                $translationResult = $this->translator->bulkTranslate(
+//                    array_values($fields),
+//                    $targetLanguage,
+//                    $sourceLanguage
+//                );
+
+                $translationResult = [];
+                if ($targetLanguage === 'de') {
+                    $translationResult = json_decode(
+                        '[{"detected_source_language":"EN","text":"Der Name"},{"detected_source_language":"EN","text":"Der zweite Name"},{"detected_source_language":"EN","text":"<p>Eine Beschreibung<\/p>\n"},{"detected_source_language":"EN","text":"Mit einer Textarea"},{"detected_source_language":"EN","text":"Und eine weitere, verschachtelte Beschreibung"},{"detected_source_language":"EN","text":"<p>Sieh mal, ein WYSIWYG-Editor<\/p>\n"}]',
+                        true
+                    );
+                } elseif ($targetLanguage === 'fr') {
+                    $translationResult = json_decode(
+                        '[{"detected_source_language":"EN","text":"Le nom"},{"detected_source_language":"EN","text":"Le nome secondair"},{"detected_source_language":"EN","text":"<p>Une description<\/p>\n"},{"detected_source_language":"EN","text":"Avex une textarea"},{"detected_source_language":"EN","text":"Et une autre description, nestéd"},{"detected_source_language":"EN","text":"<p>Ouh lala!, une WYSIWYG-Editor<\/p>\n"}]',
+                        true
+                    );
+                }
 
                 $fieldTranslations = [];
                 foreach ($translationResult as $key => $result) {
                     $fieldTranslations[$fieldKeys[$key]] = (string) $result['text'];
                 }
 
-                $payload['translations'][$targetLanguage] = $fieldTranslations;
-            }
+                $payload['translations'] = $fieldTranslations;
         } catch (Exception $exception) {
             $payload = [
                 'status' => Response::HTTP_BAD_REQUEST,

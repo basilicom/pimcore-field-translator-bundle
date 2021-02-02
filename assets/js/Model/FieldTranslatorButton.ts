@@ -1,38 +1,25 @@
 import {Translator} from "./Translator";
-import {TranslatorButton} from "./TranslatorButton";
 
-export class FieldTranslatorButton implements TranslatorButton {
-    constructor(
-        private language: string,
-        private elementReference: any | Ext.form.field.IText
-    ) {
+export class FieldTranslatorButton {
+    constructor(private language: string) {
     }
 
-    addToView() {
-        this.elementReference.bodyEl.setStyle('position', 'relative');
+    render(target: Ext.IElement) {
+        target.setStyle!('position', 'relative');
 
-        const translateButton = Ext.core.DomHelper.append(this.elementReference.bodyEl.dom, "<a class='basilicom-translator_button'></a>");
+        const translateButton = Ext.core.DomHelper.append(target.dom, "<a class='basilicom-translator_button'></a>");
         const buttonElement = Ext.get(translateButton);
         if (typeof buttonElement !== "undefined" && typeof buttonElement.addListener !== "undefined") {
-            buttonElement.addListener("click", this.onSubmit.bind(this));
+            buttonElement.addListener("click", this.onSubmit.bind(this, target));
         }
     }
 
-    /**
-     * todo
-     *      disable button while translating
-     *      enable button only if content of element changed
-     */
-    onSubmit(): void {
-        const fieldValue = this.elementReference.getValue();
+    onSubmit(eventTarget: any): void {
+        const fieldValue = eventTarget.getValue();
         if (fieldValue.length > 0) {
             Translator.translate(fieldValue, this.language, (resultData: any) => {
-                this.setValue(resultData.translation);
+                eventTarget.setValue(resultData.translation);
             });
         }
-    }
-
-    setValue(translation: string) {
-        this.elementReference.setValue(translation);
     }
 }

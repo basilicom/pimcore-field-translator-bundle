@@ -1,14 +1,11 @@
 import {Translator} from "./Translator";
 import {ExtJsComponentUtil} from "../Util/ExtJsComponentUtil";
-import {TranslatorButton} from "./TranslatorButton";
 
 declare const pimcore: any;
 declare const Class: any;
 
 type BulkTranslationResult = {
-    [languageId: string]: {
-        [fieldId: string]: string;
-    }
+    [fieldId: string]: string;
 }
 
 class Button {
@@ -36,17 +33,17 @@ class Button {
     }
 }
 
-export class TabTranslatorButton implements TranslatorButton {
+export class TabTranslatorButton {
     private submitButton: Button;
 
+    private elementReference: Ext.IPanel;
     private sourceLanguage: string;
-    private targetLanguages: [string];
-    private elementReference: any | Ext.panel.IPanel;
+    private targetLanguage: string;
     private languageElements: { [language: string]: any };
 
-    constructor(sourceLanguage: string, targetLanguages: [string], elementReference: any | Ext.panel.IPanel, objectId: number) {
+    constructor(sourceLanguage: string, targetLanguage: string, objectId: number, elementReference: Ext.IPanel) {
         this.sourceLanguage = sourceLanguage;
-        this.targetLanguages = targetLanguages;
+        this.targetLanguage = targetLanguage;
         this.elementReference = elementReference;
 
         const pimcoreObjectReference = pimcore.globalmanager.get('object_' + objectId);
@@ -70,13 +67,8 @@ export class TabTranslatorButton implements TranslatorButton {
         );
     }
 
-    /**
-     * @todo this could be a decorator
-     */
-    addToView() {
-        console.log(this.elementReference);
-
-        this.elementReference.insert(0, this.submitButton.getComponent());
+    render(target: Ext.panel.IPanel) {
+        target.insert!(0, this.submitButton.getComponent());
     }
 
     onSubmit() {
@@ -84,30 +76,9 @@ export class TabTranslatorButton implements TranslatorButton {
         const values = ExtJsComponentUtil.getComponentValues(localizedLanguageElements);
 
         this.submitButton.disable();
-        Translator.bulkTranslate(this.sourceLanguage, this.targetLanguages, values, (resultData: { translations: BulkTranslationResult }) => {
-            this.setValues(resultData.translations, () => {
-                this.submitButton.enable();
-            });
-        });
-    }
-
-    // todo - this is ugly!
-    setValues(translations: BulkTranslationResult, onDone: Function): void {
-        const tabPanel = this.elementReference.query!('tabpanel')[0] as any;
-        const tabs = tabPanel.items.items;
-
-        tabs.forEach((item: any, key: any) => {
-            window.setTimeout(() => {
-                tabPanel.setActiveTab(key);
-
-                // todo => this is not super fail safe :/
-                const locale = Object.keys(this.languageElements)[key];
-                if (locale !== this.sourceLanguage && translations[locale]) {
-                    ExtJsComponentUtil.setComponentValues(this.languageElements[locale], translations[locale]);
-                }
-            }, 500 * key);
-
-            window.setTimeout(() => onDone(), 500 * tabs.length);
+        Translator.bulkTranslate(this.sourceLanguage, this.targetLanguage, values, (resultData: { translations: BulkTranslationResult }) => {
+            ExtJsComponentUtil.setComponentValues(this.languageElements[this.targetLanguage], resultData.translations);
+            this.submitButton.enable();
         });
     }
 }
