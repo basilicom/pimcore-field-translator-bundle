@@ -36,29 +36,17 @@ class Button {
 export class TabTranslatorButton {
     private submitButton: Button;
 
-    private elementReference: Ext.IPanel;
     private sourceLanguage: string;
     private targetLanguage: string;
-    private languageElements: { [language: string]: any };
+    private localizedField: any;
 
-    constructor(sourceLanguage: string, targetLanguage: string, objectId: number, elementReference: Ext.IPanel) {
+    constructor(sourceLanguage: string, targetLanguage: string, objectId: number, localizedField: any) {
         this.sourceLanguage = sourceLanguage;
         this.targetLanguage = targetLanguage;
-        this.elementReference = elementReference;
+        this.localizedField = localizedField;
 
         const pimcoreObjectReference = pimcore.globalmanager.get('object_' + objectId);
         const localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields;
-
-        this.languageElements = {};
-        if (elementReference === localizedFields.component) {
-            this.languageElements = {...localizedFields.languageElements};
-        } else {
-            localizedFields.referencedFields.forEach((referencedField: any) => {
-                if (elementReference === referencedField.component) {
-                    this.languageElements = {...referencedField.languageElements};
-                }
-            });
-        }
 
         this.submitButton = new Button(
             'Translate fields from "' + this.sourceLanguage + '"',
@@ -72,12 +60,16 @@ export class TabTranslatorButton {
     }
 
     onSubmit() {
-        const localizedLanguageElements = this.languageElements[this.sourceLanguage];
-        const values = ExtJsComponentUtil.getComponentValues(localizedLanguageElements);
+        let values: { [key: string]: string } = {};
+        this.localizedField.languageElements[this.sourceLanguage].forEach((field: any) => {
+            values[field.name] = field.getValue();
+        });
+
+        let components = this.localizedField.languageElements[this.targetLanguage];
 
         this.submitButton.disable();
         Translator.bulkTranslate(this.sourceLanguage, this.targetLanguage, values, (resultData: { translations: BulkTranslationResult }) => {
-            ExtJsComponentUtil.setComponentValues(this.languageElements[this.targetLanguage], resultData.translations);
+            ExtJsComponentUtil.setComponentValues(components, resultData.translations);
             this.submitButton.enable();
         });
     }

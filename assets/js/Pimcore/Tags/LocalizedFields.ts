@@ -3,37 +3,30 @@ import {TabTranslatorButton} from "../../Model/TabTranslatorButton";
 declare const pimcore: any;
 declare const Class: any;
 
-
-// option => create new version of dataobject and refresh view
-// bekomme ich beim translate die neusten inputs
-
-// todo => add own tab with settings ==> checkbox per language, overwrite filled fields, ...
 pimcore.object.tags.localizedfields = Class.create(pimcore.object.tags.localizedfields, {
-    getLayoutEdit: function ($super: any) {
-        const localizedFieldComponent = $super();
-        const context = this.context;
+    getTabItem: function ($super: any, ...args: [any]) {
+        const self = this;
 
-        // todo not so nice...
+        const tabItem = $super(...args);
+        const objectId = this.context.objectId;
+
         const sourceLanguage = [...this.frontendLanguages].shift() ?? "en";
 
-        localizedFieldComponent.on("afterrender", (panel: Ext.IPanel) => {
-            pimcore.elementservice.updateObject(2, {"localizedfields":{"en":{"yetAnother":"yet!"},"de":{},"fr":{}}});
-
-            localizedFieldComponent.query('tabpanel').forEach((tabpanel: Ext.ITabPanel) => {
-                const tabPanels = tabpanel.items.items as [Ext.IPanel];
-                tabPanels.forEach((tabpanel: Ext.ITabPanel) => {
-                    const targetLanguage = "de"; // todo
-
-                    // panel.query!('component').forEach((component: any) => {
-                    //     console.log(component);
-                    // });
-
-                    const translatorButton = new TabTranslatorButton(sourceLanguage, targetLanguage, context.objectId, panel);
-                    translatorButton.render(tabpanel);
-                });
-            });
+        let targetLanguage = '';
+        Object.values(args).forEach((arg) => {
+            if (arg.language) return targetLanguage = arg.language;
         });
 
-        return localizedFieldComponent;
+        if (targetLanguage !== sourceLanguage) {
+            let currentAfterRenderEvent = tabItem.listeners.afterrender;
+            tabItem.listeners.afterrender = function (panel: any) {
+                const translatorButton = new TabTranslatorButton(sourceLanguage, targetLanguage, objectId, self);
+                translatorButton.render(panel);
+
+                return currentAfterRenderEvent.apply(this, arguments!);
+            }
+        }
+
+        return tabItem;
     }
 });
