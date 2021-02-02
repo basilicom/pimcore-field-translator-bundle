@@ -13,19 +13,21 @@ pimcore.object.tags.localizedfields = Class.create(pimcore.object.tags.localized
         const localizedFieldComponent = $super();
         const context = this.context;
 
+        // todo not so nice...
+        const sourceLanguage = [...this.frontendLanguages].shift() ?? "en";
+
         localizedFieldComponent.on("afterrender", (panel: Ext.IPanel) => {
+            pimcore.elementservice.updateObject(2, {"localizedfields":{"en":{"yetAnother":"yet!"},"de":{},"fr":{}}});
+
             localizedFieldComponent.query('tabpanel').forEach((tabpanel: Ext.ITabPanel) => {
                 const tabPanels = tabpanel.items.items as [Ext.IPanel];
-                console.log(tabpanel);
-
                 tabPanels.forEach((tabpanel: Ext.ITabPanel) => {
                     const targetLanguage = "de"; // todo
-                    const sourceLanguage = "en"; // todo
 
                     // panel.query!('component').forEach((component: any) => {
                     //     console.log(component);
                     // });
-                    //
+
                     const translatorButton = new TabTranslatorButton(sourceLanguage, targetLanguage, context.objectId, panel);
                     translatorButton.render(tabpanel);
                 });

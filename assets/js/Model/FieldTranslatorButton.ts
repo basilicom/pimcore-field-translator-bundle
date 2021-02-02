@@ -1,7 +1,7 @@
 import {Translator} from "./Translator";
 
 export class FieldTranslatorButton {
-    constructor(private language: string) {
+    constructor(private targetLanguage: string) {
     }
 
     render(target: Ext.IElement) {
@@ -17,7 +17,7 @@ export class FieldTranslatorButton {
     onSubmit(eventTarget: any): void {
         const fieldValue = eventTarget.getValue();
         if (fieldValue.length > 0) {
-            Translator.translate(fieldValue, this.language, (resultData: any) => {
+            Translator.translate(fieldValue, this.targetLanguage, (resultData: any) => {
                 eventTarget.setValue(resultData.translation);
             });
         }
