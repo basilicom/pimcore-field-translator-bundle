@@ -1,5 +1,6 @@
 import {Translator} from "./Translator";
 import {ExtJsComponentUtil} from "../Util/ExtJsComponentUtil";
+import {PimcoreTranslationAdapter} from "./PimcoreTranslationAdapter";
 
 declare const pimcore: any;
 declare const Class: any;
@@ -15,7 +16,11 @@ class Button {
         this.label = label;
         this.disabledLabel = disabledLabel;
         // @ts-ignore
-        this.component = new Ext.Button({text: label, handler: onSubmit});
+        this.component = new Ext.Button({
+            text: label,
+            style: 'margin-bottom: 16px',
+            handler: onSubmit
+        });
     }
 
     enable(): void {
@@ -49,9 +54,11 @@ export class TabTranslatorButton {
         const localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields;
 
         this.submitButton = new Button(
-            'Translate fields from "' + this.sourceLanguage + '"',
+            PimcoreTranslationAdapter.translate('tabTranslatorButton.idle', {
+                '%locale': pimcore.available_languages[this.sourceLanguage]
+            }),
             this.onSubmit.bind(this),
-            'Translating tabs ...'
+            PimcoreTranslationAdapter.translate('tabTranslatorButton.pending'),
         );
     }
 

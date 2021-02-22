@@ -1,19 +1,29 @@
 import {Translator} from "./Translator";
+import {PimcoreTranslationAdapter} from "./PimcoreTranslationAdapter";
+
+declare const pimcore: any;
 
 export class FieldTranslatorButton {
     constructor(private targetLanguage: string) {
     }
 
     render(target: Ext.IElement) {
-        target.setStyle!('position', 'relative');
+        target.setStyle!("position", "relative");
 
-        let buttonTemplate = `<a class="basilicom-translator_button" title="Translate field content to ${this.targetLanguage}"></a>`;
-
-        const translateButton = Ext.core.DomHelper.append(target.dom, buttonTemplate);
+        const translateButton = Ext.core.DomHelper.append(target.dom, this.getButtonTemplate());
         const buttonElement = Ext.get(translateButton);
         if (typeof buttonElement !== "undefined" && typeof buttonElement.addListener !== "undefined") {
             buttonElement.addListener("click", this.onSubmit.bind(this, target));
         }
+    }
+
+    private getButtonTemplate(): string {
+        const sourceLanguage = [...pimcore.settings.websiteLanguages].shift() ?? "en";
+        const buttonTooltip = PimcoreTranslationAdapter.translate("fieldTranslatorButton.idle", {
+            "%locale": pimcore.available_languages[sourceLanguage]
+        });
+
+        return `<a class="basilicom-translator_button" title="${buttonTooltip}"></a>`;
     }
 
     onSubmit(eventTarget: any): void {

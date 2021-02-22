@@ -1,0 +1,6 @@
+tabTranslatorButton:
+  idle: "Alle Felder übersetzen und befüllen (Quelle: %locale)."
+  pending: "Felder werden übersetzt..."
+
+fieldTranslatorButton:
+  idle: "Feld aus dem %locale-Tab übersetzen und hier befüllen."

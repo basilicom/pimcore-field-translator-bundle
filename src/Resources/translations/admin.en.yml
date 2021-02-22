@@ -1,0 +1,6 @@
+tabTranslatorButton:
+  idle: "Translate and fill all fields (Source: %locale)."
+  pending: "Translating fields..."
+
+fieldTranslatorButton:
+  idle: "Translate field from %locale-tab and fill."
