@@ -18,7 +18,7 @@ Encore
 
   .addEntry('pimcore-field-translator', './assets/js/pimcore-field-translator.ts')
 
-  .enableSourceMaps(true)
+  .enableSourceMaps(!Encore.isProduction())
   .enableVersioning(false)
 
   .enableSassLoader()

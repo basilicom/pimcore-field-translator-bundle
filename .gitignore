@@ -3,5 +3,5 @@ vendor
 .phpunit*
 _output
 node_modules
-src/Resources/public/entrypoints.json
-src/Resources/public/manifest.json
+entrypoints.json
+manifest.json

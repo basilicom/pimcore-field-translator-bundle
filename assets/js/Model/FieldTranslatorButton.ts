@@ -7,7 +7,9 @@ export class FieldTranslatorButton {
     render(target: Ext.IElement) {
         target.setStyle!('position', 'relative');
 
-        const translateButton = Ext.core.DomHelper.append(target.dom, "<a class='basilicom-translator_button'></a>");
+        let buttonTemplate = `<a class="basilicom-translator_button" title="Translate field content to ${this.targetLanguage}"></a>`;
+
+        const translateButton = Ext.core.DomHelper.append(target.dom, buttonTemplate);
         const buttonElement = Ext.get(translateButton);
         if (typeof buttonElement !== "undefined" && typeof buttonElement.addListener !== "undefined") {
             buttonElement.addListener("click", this.onSubmit.bind(this, target));
