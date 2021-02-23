@@ -1,36 +1,54 @@
 import {Translator} from "./Translator";
-import {PimcoreTranslationAdapter} from "./PimcoreTranslationAdapter";
-
-declare const pimcore: any;
+import {ExtJsButton, ExtJsTextfield} from "../definitions";
 
 export class FieldTranslatorButton {
-    constructor(private targetLanguage: string) {
+    private targetLanguage: string = "";
+    private lastTranslatedValue: string = "";
+    private lastTranslation: string = "";
+    private button?: ExtJsButton;
+
+    constructor(targetLanguage: string) {
+        this.targetLanguage = targetLanguage;
     }
 
-    render(target: Ext.IElement) {
-        target.setStyle!("position", "relative");
-
-        const translateButton = Ext.core.DomHelper.append(target.dom, this.getButtonTemplate());
-        const buttonElement = Ext.get(translateButton);
-        if (typeof buttonElement !== "undefined" && typeof buttonElement.addListener !== "undefined") {
-            buttonElement.addListener("click", this.onSubmit.bind(this, target));
+    render(field: ExtJsTextfield) {
+        if (!field.bodyEl) {
+            return;
         }
-    }
+        const element = field.bodyEl;
+        element.setStyle!("position", "relative");
 
-    private getButtonTemplate(): string {
-        const buttonTooltip = PimcoreTranslationAdapter.translate("fieldTranslatorButton.idle", {
-            "%locale": pimcore.available_languages[this.targetLanguage]
+        this.button = Ext.create("Ext.Button", {
+            text: "",
+            baseCls: "basilicom-translator__field-button",
+            renderTo: element.dom,
+            handler: () => {
+                this.onSubmit(field);
+            }
         });
 
-        return `<a class="basilicom-translator__field-button" title="${buttonTooltip}"></a>`;
+        field.on!("change", (eventTarget: any) => {
+            if (this.button) this.button.setDisabled(!this.hasValueChanged(field));
+        });
     }
 
-    onSubmit(eventTarget: any): void {
-        const fieldValue = eventTarget.getValue();
-        if (fieldValue.length > 0) {
+    private onSubmit(field: ExtJsTextfield): void {
+        const fieldValue = field.getValue();
+        if (this.hasValueChanged(field)) {
+            if (this.button) this.button.setDisabled(true);
+
             Translator.translate(fieldValue, this.targetLanguage, (resultData: any) => {
-                eventTarget.setValue(resultData.translation);
+                this.lastTranslatedValue = fieldValue;
+                this.lastTranslation = resultData.translation;
+                field.setValue(resultData.translation);
             });
         }
+    }
+
+    private hasValueChanged(field: ExtJsTextfield): boolean {
+        const currentValue = field.getValue();
+        return currentValue.length > 0
+            && currentValue !== this.lastTranslatedValue
+            && currentValue !== this.lastTranslation
     }
 }

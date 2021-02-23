@@ -1,10 +1,6 @@
-const forceFieldOverwrite = false; // make configurable
+import {PimcoreLocalizedField} from "../definitions";
 
-type PimcoreLocalizedField = {
-    ckeditor?: CKEDITOR.editor,
-    name: string,
-    component: any | Ext.form.field.IText
-};
+const forceFieldOverwrite = false; // make configurable
 
 export class ExtJsComponentUtil {
     static setComponentValues(fields: [PimcoreLocalizedField], translations: { [key: string]: string; }): void {

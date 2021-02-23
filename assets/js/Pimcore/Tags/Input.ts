@@ -1,4 +1,5 @@
 import {FieldTranslatorButton} from "../../Model/FieldTranslatorButton";
+import {ExtJsTextfield} from "../../definitions";
 
 declare const pimcore: any;
 declare const Class: any;
@@ -11,10 +12,8 @@ pimcore.object.tags.input = Class.create(pimcore.object.tags.input, {
         if (context && context.hasOwnProperty("containerType") && context.containerType === "localizedfield") {
             const language = context.language as string;
             panelElement.on("afterrender", function (element: Ext.form.field.IBase) {
-                if (element.bodyEl) {
-                    const fieldTranslatorButton = new FieldTranslatorButton(language);
-                    fieldTranslatorButton.render(element.bodyEl);
-                }
+                const fieldTranslatorButton = new FieldTranslatorButton(language);
+                fieldTranslatorButton.render(element as ExtJsTextfield);
             });
         }
 

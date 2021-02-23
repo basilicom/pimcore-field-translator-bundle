@@ -3,7 +3,6 @@ import {ExtJsComponentUtil} from "../Util/ExtJsComponentUtil";
 import {PimcoreTranslationAdapter} from "./PimcoreTranslationAdapter";
 
 declare const pimcore: any;
-declare const Class: any;
 
 type BulkTranslationResult = {
     [fieldId: string]: string;

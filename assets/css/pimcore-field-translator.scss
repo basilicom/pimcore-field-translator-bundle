@@ -10,7 +10,7 @@
     top: 0;
     width: 30px;
 
-    &:hover {
+    &:hover:not(.x-btn-disabled) {
       background: #f0f0f0;
       cursor: pointer;
     }
@@ -22,6 +22,12 @@
       display: block;
       height: 100%;
       width: 100%;
+    }
+
+    &.x-btn-disabled,
+    &[aria-disabled="true"] {
+      cursor: not-allowed;
+      opacity: .5;
     }
   }
 

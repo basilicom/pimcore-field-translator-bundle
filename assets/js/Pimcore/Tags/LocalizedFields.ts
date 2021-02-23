@@ -23,7 +23,7 @@ pimcore.object.tags.localizedfields = Class.create(pimcore.object.tags.localized
                 translatorButton.render(panel);
             } else {
                 const infoText = PimcoreTranslationAdapter.translate("tabTranslatorButton.sourceTabInfo");
-                panel.insert!(0, Ext.create('Ext.panel.Panel', {
+                panel.insert!(0, Ext.create("Ext.panel.Panel", {
                     html: `<p class="alert alert-warning basilicom-translator__source-language-info">${infoText}</p>`
                 }));
             }
