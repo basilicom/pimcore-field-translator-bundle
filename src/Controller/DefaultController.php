@@ -68,22 +68,8 @@ class DefaultController extends FrontendController
         try {
             $payload = [
                 'status' => Response::HTTP_OK,
-                'translations' => [],
+                'translations' => $this->translationService->bulkTranslate($fields, $targetLanguage, $sourceLanguage),
             ];
-
-            $fieldKeys = array_keys($fields);
-            $translationResult = $this->translationService->bulkTranslate(
-                array_values($fields),
-                $targetLanguage,
-                $sourceLanguage
-            );
-
-            $fieldTranslations = [];
-            foreach ($translationResult as $key => $translation) {
-                $fieldTranslations[$fieldKeys[$key]] = (string)$translation;
-            }
-
-            $payload['translations'] = $fieldTranslations;
         } catch (Exception $exception) {
             $payload = [
                 'status' => Response::HTTP_BAD_REQUEST,

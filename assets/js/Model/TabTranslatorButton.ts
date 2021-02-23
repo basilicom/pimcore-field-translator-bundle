@@ -70,7 +70,7 @@ export class TabTranslatorButton {
     onSubmit() {
         let values: { [key: string]: string } = {};
         this.localizedField.languageElements[this.sourceLanguage].forEach((field: any) => {
-            if (supportedTypes.includes(field.fieldConfig.fieldtype)) {
+            if (supportedTypes.includes(field.fieldConfig.fieldtype) && field.getValue().length > 0) {
                 values[field.name] = field.getValue();
             }
         });
