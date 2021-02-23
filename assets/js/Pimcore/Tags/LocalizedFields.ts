@@ -6,11 +6,6 @@ declare const Class: any;
 
 pimcore.object.tags.localizedfields = Class.create(pimcore.object.tags.localizedfields, {
     getTabItem: function ($super: any, ...args: [any]) {
-        const self = this;
-
-        const tabItem = $super(...args);
-        const objectId = this.context.objectId;
-
         const sourceLanguage = [...this.frontendLanguages].shift() ?? "en";
 
         let targetLanguage = "";
@@ -18,7 +13,10 @@ pimcore.object.tags.localizedfields = Class.create(pimcore.object.tags.localized
             if (arg.language) return targetLanguage = arg.language;
         });
 
-        let currentAfterRenderEvent = tabItem.listeners.afterrender;
+        const self = this;
+        const objectId = this.context.objectId;
+        const tabItem = $super(...args);
+        const currentAfterRenderEvent = tabItem.listeners.afterrender;
         tabItem.listeners.afterrender = function (panel: any) {
             if (targetLanguage !== sourceLanguage) {
                 const translatorButton = new TabTranslatorButton(sourceLanguage, targetLanguage, objectId, self);
