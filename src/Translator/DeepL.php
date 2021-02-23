@@ -20,14 +20,13 @@ class DeepL implements Translator
     /**
      * @inheritDoc
      * @see https://www.deepl.com/docs-api/translating-text/
-     *
      * @param string|array $text
      */
     public function translate(string $text, string $targetLanguage, string $sourceLanguage = ''): string
     {
         $translations = $this->requestTranslations([$text], $targetLanguage, $sourceLanguage);
 
-        return (string)$translations[0]['text'];
+        return (string) $translations[0]['text'];
     }
 
     public function bulkTranslate(array $texts, string $targetLanguage, string $sourceLanguage = ''): array
@@ -75,8 +74,8 @@ class DeepL implements Translator
 
         $query = http_build_query($payload);
         $textFields = [];
-        foreach ($texts as $translateableText) {
-            $textFields[] = http_build_query(['text' => $translateableText]);
+        foreach ($texts as $translatableText) {
+            $textFields[] = http_build_query(['text' => $translatableText]);
         }
 
         return $query . '&' . implode('&', $textFields);

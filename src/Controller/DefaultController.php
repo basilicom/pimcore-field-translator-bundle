@@ -71,7 +71,6 @@ class DefaultController extends FrontendController
                 'translations' => [],
             ];
 
-            // todo ==> cache field values per language to lower API usage
             $fieldKeys = array_keys($fields);
             $translationResult = $this->translationService->bulkTranslate(
                 array_values($fields),
@@ -80,8 +79,8 @@ class DefaultController extends FrontendController
             );
 
             $fieldTranslations = [];
-            foreach ($translationResult as $key => $result) {
-                $fieldTranslations[$fieldKeys[$key]] = (string)$result['text'];
+            foreach ($translationResult as $key => $translation) {
+                $fieldTranslations[$fieldKeys[$key]] = (string)$translation;
             }
 
             $payload['translations'] = $fieldTranslations;
