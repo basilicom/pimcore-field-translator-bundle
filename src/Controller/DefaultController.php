@@ -2,6 +2,7 @@
 
 namespace Basilicom\FieldTranslatorBundle\Controller;
 
+use Basilicom\FieldTranslatorBundle\Translator\TranslationService;
 use Exception;
 use Basilicom\FieldTranslatorBundle\Translator\Translator;
 use Pimcore\Controller\FrontendController;
@@ -14,11 +15,11 @@ class DefaultController extends FrontendController
 {
     const BULK_TRANSLATION_SEPARATOR = '%%%-%%%';
 
-    private Translator $translator;
+    private $translationService;
 
-    public function __construct(Translator $translator)
+    public function __construct(TranslationService $translationService)
     {
-        $this->translator = $translator;
+        $this->translationService = $translationService;
     }
 
     /**
@@ -30,11 +31,11 @@ class DefaultController extends FrontendController
     public function translate(Request $request)
     {
         $requestData = $this->getRequestData($request);
-        $text = (string) $requestData['text'];
-        $targetLanguage = (string) $requestData['language'];
+        $text = (string)$requestData['text'];
+        $targetLanguage = (string)$requestData['language'];
 
         try {
-            $translationResult = $this->translator->translate($text, $targetLanguage);
+            $translationResult = $this->translationService->translate($text, $targetLanguage);
 
             $payload = [
                 'status' => Response::HTTP_OK,
@@ -60,9 +61,9 @@ class DefaultController extends FrontendController
     public function bulkTranslate(Request $request)
     {
         $requestData = $this->getRequestData($request);
-        $fields = (array) $requestData['fields'];
-        $sourceLanguage = (string) $requestData['sourceLanguage'];
-        $targetLanguage = (string) $requestData['targetLanguage'];
+        $fields = (array)$requestData['fields'];
+        $sourceLanguage = (string)$requestData['sourceLanguage'];
+        $targetLanguage = (string)$requestData['targetLanguage'];
 
         try {
             $payload = [
@@ -72,18 +73,18 @@ class DefaultController extends FrontendController
 
             // todo ==> cache field values per language to lower API usage
             $fieldKeys = array_keys($fields);
-                $translationResult = $this->translator->bulkTranslate(
-                    array_values($fields),
-                    $targetLanguage,
-                    $sourceLanguage
-                );
+            $translationResult = $this->translationService->bulkTranslate(
+                array_values($fields),
+                $targetLanguage,
+                $sourceLanguage
+            );
 
-                $fieldTranslations = [];
-                foreach ($translationResult as $key => $result) {
-                    $fieldTranslations[$fieldKeys[$key]] = (string) $result['text'];
-                }
+            $fieldTranslations = [];
+            foreach ($translationResult as $key => $result) {
+                $fieldTranslations[$fieldKeys[$key]] = (string)$result['text'];
+            }
 
-                $payload['translations'] = $fieldTranslations;
+            $payload['translations'] = $fieldTranslations;
         } catch (Exception $exception) {
             $payload = [
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -103,6 +104,6 @@ class DefaultController extends FrontendController
         $jsonRequestData = json_decode($request->getContent(), true);
         $requestData = $jsonRequestData ? $jsonRequestData : $request->request->all();
 
-        return (array) $requestData;
+        return (array)$requestData;
     }
 }
