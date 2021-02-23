@@ -18,9 +18,9 @@ class TranslationService
 
     public function translate(string $text, string $targetLanguage, string $sourceLanguage = ''): string
     {
-        $cacheKey = $this->getCacheKey($text, $targetLanguage, $sourceLanguage);
+        $cacheKey = $this->getCacheKey($text, $targetLanguage);
         if ($cachedTranslation = $this->cacheHandler->load($cacheKey)) {
-            return 'cached' . (string)$cachedTranslation;
+            return (string)$cachedTranslation;
         }
 
         $translationResult = $this->translator->translate($text, $targetLanguage, $sourceLanguage);
@@ -30,29 +30,34 @@ class TranslationService
         return $translationResult;
     }
 
-    public function bulkTranslate(array $texts, string $targetLanguage, string $sourceLanguage = ''): array
+    public function bulkTranslate(array $textsToTranslate, string $targetLanguage, string $sourceLanguage = ''): array
     {
-        $cacheKey = md5(json_encode($texts));
-        if ($translationResult = $this->cacheHandler->load($cacheKey)) {
-            return (array)$translationResult;
+        $cachedTranslations = [];
+        $uncachedTranslations = [];
+        foreach ($textsToTranslate as $key => $text) {
+            $cacheKey = $this->getCacheKey($text, $targetLanguage);
+            if ($cachedTranslation = $this->cacheHandler->load($cacheKey)) {
+                $cachedTranslations[$key] = (string)$cachedTranslation;
+            } else {
+                $uncachedTranslations[$key] = $text;
+            }
         }
 
-        $translationResult = $this->translator->bulkTranslate($texts, $targetLanguage, $sourceLanguage);
+        if (empty($uncachedTranslations)) {
+            return $cachedTranslations;
+        }
 
-        $this->cacheHandler->save($cacheKey, $translationResult, [], new DateInterval('P14D'));
+        $translationResult = $this->translator->bulkTranslate($uncachedTranslations, $targetLanguage, $sourceLanguage);
+        foreach ($translationResult as $key => $text) {
+            $cacheKey = $this->getCacheKey($textsToTranslate[$key], $targetLanguage);
+            $this->cacheHandler->save($cacheKey, $text, [], new DateInterval('P14D'));
+        }
 
-        return $translationResult;
+        return array_merge($translationResult, $cachedTranslations);
     }
 
-    /**
-     * @param string $text
-     * @param string $targetLanguage
-     * @param string $sourceLanguage
-     *
-     * @return string
-     */
-    private function getCacheKey(string $text, string $targetLanguage, string $sourceLanguage): string
+    private function getCacheKey(string $text, string $targetLanguage): string
     {
-        return md5($text . '_' . $targetLanguage . '_' . $sourceLanguage);
+        return md5($text . '_' . $targetLanguage);
     }
 }
