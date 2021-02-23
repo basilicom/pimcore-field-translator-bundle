@@ -18,9 +18,8 @@ export class FieldTranslatorButton {
     }
 
     private getButtonTemplate(): string {
-        const sourceLanguage = [...pimcore.settings.websiteLanguages].shift() ?? "en";
         const buttonTooltip = PimcoreTranslationAdapter.translate("fieldTranslatorButton.idle", {
-            "%locale": pimcore.available_languages[sourceLanguage]
+            "%locale": pimcore.available_languages[this.targetLanguage]
         });
 
         return `<a class="basilicom-translator_button" title="${buttonTooltip}"></a>`;

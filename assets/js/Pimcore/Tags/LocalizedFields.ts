@@ -12,7 +12,7 @@ pimcore.object.tags.localizedfields = Class.create(pimcore.object.tags.localized
 
         const sourceLanguage = [...this.frontendLanguages].shift() ?? "en";
 
-        let targetLanguage = '';
+        let targetLanguage = "";
         Object.values(args).forEach((arg) => {
             if (arg.language) return targetLanguage = arg.language;
         });

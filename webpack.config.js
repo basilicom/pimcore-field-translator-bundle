@@ -8,6 +8,7 @@ Encore
     babelConfig.plugins.push("@babel/plugin-transform-spread");
     babelConfig.plugins.push("@babel/plugin-transform-template-literals");
     babelConfig.plugins.push("@babel/plugin-transform-arrow-functions");
+    babelConfig.plugins.push("@babel/plugin-transform-parameters");
   }, {
     useBuiltIns: 'usage',
     corejs: 3,
@@ -24,6 +25,15 @@ Encore
   .enableSassLoader()
   .enablePostCssLoader((options) => {
     options.plugins = [require("autoprefixer")()];
+  })
+
+  .configureTerserPlugin((options) => {
+    options.terserOptions = {
+      ...options.terserOptions,
+      mangle: {
+        reserved: ['$super']
+      }
+    }
   })
 
   .copyFiles({from: './assets/img/', to: 'img/[name].[ext]'})

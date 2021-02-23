@@ -18,7 +18,7 @@ class Button {
         // @ts-ignore
         this.component = new Ext.Button({
             text: label,
-            style: 'margin-bottom: 16px',
+            style: "margin-bottom: 16px",
             handler: onSubmit
         });
     }
@@ -38,6 +38,8 @@ class Button {
     }
 }
 
+const supportedTypes = ["input", "textarea", "wysiwyg"];
+
 export class TabTranslatorButton {
     private submitButton: Button;
 
@@ -50,15 +52,15 @@ export class TabTranslatorButton {
         this.targetLanguage = targetLanguage;
         this.localizedField = localizedField;
 
-        const pimcoreObjectReference = pimcore.globalmanager.get('object_' + objectId);
+        const pimcoreObjectReference = pimcore.globalmanager.get("object_" + objectId);
         const localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields;
 
         this.submitButton = new Button(
-            PimcoreTranslationAdapter.translate('tabTranslatorButton.idle', {
-                '%locale': pimcore.available_languages[this.sourceLanguage]
+            PimcoreTranslationAdapter.translate("tabTranslatorButton.idle", {
+                "%locale": pimcore.available_languages[this.sourceLanguage]
             }),
             this.onSubmit.bind(this),
-            PimcoreTranslationAdapter.translate('tabTranslatorButton.pending'),
+            PimcoreTranslationAdapter.translate("tabTranslatorButton.pending"),
         );
     }
 
@@ -69,10 +71,14 @@ export class TabTranslatorButton {
     onSubmit() {
         let values: { [key: string]: string } = {};
         this.localizedField.languageElements[this.sourceLanguage].forEach((field: any) => {
-            values[field.name] = field.getValue();
+            if (supportedTypes.includes(field.fieldConfig.fieldtype)) {
+                values[field.name] = field.getValue();
+            }
         });
 
-        let components = this.localizedField.languageElements[this.targetLanguage];
+        let components = this.localizedField.languageElements[this.targetLanguage].filter((component: any) => {
+            return supportedTypes.includes(component.fieldConfig.fieldtype);
+        });
 
         this.submitButton.disable();
         Translator.bulkTranslate(this.sourceLanguage, this.targetLanguage, values, (resultData: { translations: BulkTranslationResult }) => {
