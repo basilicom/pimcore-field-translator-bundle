@@ -25,21 +25,21 @@ class TranslationService
 
         $translationResult = $this->translator->translate($text, $targetLanguage, $sourceLanguage);
 
-        $this->cacheHandler->save($cacheKey, $translationResult, [], new DateInterval('P7D'));
+        $this->cacheHandler->save($cacheKey, $translationResult, [], new DateInterval('P14D'));
 
         return $translationResult;
     }
 
     public function bulkTranslate(array $texts, string $targetLanguage, string $sourceLanguage = ''): array
     {
-//        $cacheKey = md5(json_encode($texts));
-//        if ($translationResult = $this->cacheHandler->load($cacheKey)) {
-//            return (array)$translationResult;
-//        }
+        $cacheKey = md5(json_encode($texts));
+        if ($translationResult = $this->cacheHandler->load($cacheKey)) {
+            return (array)$translationResult;
+        }
 
         $translationResult = $this->translator->bulkTranslate($texts, $targetLanguage, $sourceLanguage);
 
-//        $this->cacheHandler->save($cacheKey, $translationResult, [], new DateInterval('P7D'));
+        $this->cacheHandler->save($cacheKey, $translationResult, [], new DateInterval('P14D'));
 
         return $translationResult;
     }
