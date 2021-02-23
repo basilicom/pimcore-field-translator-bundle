@@ -1,4 +1,5 @@
 tabTranslatorButton:
+  sourceTabInfo: "The fields filled in here are used to generate the translations of the other tabs."
   idle: "Translate and fill all fields (Source: %locale)."
   pending: "Translating fields..."
 

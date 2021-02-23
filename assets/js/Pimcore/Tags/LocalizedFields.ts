@@ -1,4 +1,5 @@
 import {TabTranslatorButton} from "../../Model/TabTranslatorButton";
+import {PimcoreTranslationAdapter} from "../../Model/PimcoreTranslationAdapter";
 
 declare const pimcore: any;
 declare const Class: any;
@@ -17,14 +18,19 @@ pimcore.object.tags.localizedfields = Class.create(pimcore.object.tags.localized
             if (arg.language) return targetLanguage = arg.language;
         });
 
-        if (targetLanguage !== sourceLanguage) {
-            let currentAfterRenderEvent = tabItem.listeners.afterrender;
-            tabItem.listeners.afterrender = function (panel: any) {
+        let currentAfterRenderEvent = tabItem.listeners.afterrender;
+        tabItem.listeners.afterrender = function (panel: any) {
+            if (targetLanguage !== sourceLanguage) {
                 const translatorButton = new TabTranslatorButton(sourceLanguage, targetLanguage, objectId, self);
                 translatorButton.render(panel);
-
-                return currentAfterRenderEvent.apply(this, arguments!);
+            } else {
+                const infoText = PimcoreTranslationAdapter.translate("tabTranslatorButton.sourceTabInfo");
+                panel.insert!(0, Ext.create('Ext.panel.Panel', {
+                    html: `<p class="alert alert-warning basilicom-translator__source-language-info">${infoText}</p>`
+                }));
             }
+
+            return currentAfterRenderEvent.apply(this, arguments!);
         }
 
         return tabItem;

@@ -22,7 +22,7 @@ export class FieldTranslatorButton {
             "%locale": pimcore.available_languages[this.targetLanguage]
         });
 
-        return `<a class="basilicom-translator_button" title="${buttonTooltip}"></a>`;
+        return `<a class="basilicom-translator__field-button" title="${buttonTooltip}"></a>`;
     }
 
     onSubmit(eventTarget: any): void {
