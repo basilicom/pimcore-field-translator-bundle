@@ -80,9 +80,16 @@ export class TabTranslatorButton {
         });
 
         this.submitButton.disable();
-        Translator.bulkTranslate(this.sourceLanguage, this.targetLanguage, values, (resultData: { translations: BulkTranslationResult }) => {
-            ExtJsComponentUtil.setComponentValues(components, resultData.translations);
-            this.submitButton.enable();
-        });
+        Translator.bulkTranslate(
+            this.sourceLanguage,
+            this.targetLanguage,
+            values,
+            (resultData: { translations: BulkTranslationResult }) => {
+                ExtJsComponentUtil.setComponentValues(components, resultData.translations);
+            },
+            () => {
+                this.submitButton.enable();
+            }
+        );
     }
 }

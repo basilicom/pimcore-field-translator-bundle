@@ -2,7 +2,14 @@ export class Translator {
     private static translateUrl = "/basilicom/field-translator/translate";
     private static bulkTranslateUrl = "/basilicom/field-translator/bulk-translate";
 
-    static bulkTranslate(sourceLanguage: string, targetLanguage: string, fields: { [key: string]: string; }, onSuccess: Function) {
+    static bulkTranslate(
+        sourceLanguage: string,
+        targetLanguage: string,
+        fields: { [key: string]: string; },
+        onSuccess: Function,
+        onDone: Function = () => {
+        }
+    ) {
         const requestConfig = {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -19,10 +26,18 @@ export class Translator {
                 } else {
                     Ext.MessageBox.alert("Error #" + resultData.errorCode, resultData.errorMessage);
                 }
+            })
+            .finally(() => {
+                onDone();
             });
     }
 
-    static translate(text: string, language: string, onSuccess: Function) {
+    static translate(
+        text: string,
+        language: string,
+        onSuccess: Function,
+        onDone: Function = () => {}
+    ) {
         if (text.length > 0) {
             var requestConfig = {
                 method: "POST",
@@ -40,6 +55,9 @@ export class Translator {
                     } else {
                         Ext.MessageBox.alert("Error #" + resultData.errorCode, resultData.errorMessage);
                     }
+                })
+                .finally(() => {
+                    onDone();
                 });
         }
     }

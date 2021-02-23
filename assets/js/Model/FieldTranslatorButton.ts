@@ -37,11 +37,18 @@ export class FieldTranslatorButton {
         if (this.hasValueChanged(field)) {
             if (this.button) this.button.setDisabled(true);
 
-            Translator.translate(fieldValue, this.targetLanguage, (resultData: any) => {
-                this.lastTranslatedValue = fieldValue;
-                this.lastTranslation = resultData.translation;
-                field.setValue(resultData.translation);
-            });
+            Translator.translate(
+                fieldValue,
+                this.targetLanguage,
+                (resultData: any) => {
+                    this.lastTranslatedValue = fieldValue;
+                    this.lastTranslation = resultData.translation;
+                    field.setValue(resultData.translation);
+                },
+                () => {
+                    if (this.button) this.button.setDisabled(true);
+                }
+            );
         }
     }
 
