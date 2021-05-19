@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e6606cd0b05012477f317864f0e95b29",
+    "content-hash": "104b912dd57667f2e2828ce86838b641",
     "packages": [
         {
             "name": "amnuts/opcache-gui",
@@ -1042,6 +1042,7 @@
                 "cache",
                 "caching"
             ],
+            "abandoned": true,
             "time": "2019-11-29T11:22:01+00:00"
         },
         {
@@ -1611,6 +1612,7 @@
                 "reflection",
                 "static"
             ],
+            "abandoned": "roave/better-reflection",
             "time": "2020-03-27T11:06:43+00:00"
         },
         {
@@ -4854,6 +4856,7 @@
                 "parser",
                 "useragent"
             ],
+            "abandoned": "matomo/device-detector",
             "time": "2020-08-17T07:37:33+00:00"
         },
         {
@@ -7625,6 +7628,7 @@
                 "i18n",
                 "text"
             ],
+            "abandoned": true,
             "time": "2018-12-05T18:34:18+00:00"
         },
         {
@@ -7746,16 +7750,16 @@
         },
         {
             "name": "vrana/adminer",
-            "version": "v4.7.7",
+            "version": "v4.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vrana/adminer.git",
-                "reference": "ac40be998d9fcf2a7e3fcdbd5efa3dec9e070f14"
+                "reference": "b83c61fca3f491073cd5f5888a2acbf6f044366b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vrana/adminer/zipball/ac40be998d9fcf2a7e3fcdbd5efa3dec9e070f14",
-                "reference": "ac40be998d9fcf2a7e3fcdbd5efa3dec9e070f14",
+                "url": "https://api.github.com/repos/vrana/adminer/zipball/b83c61fca3f491073cd5f5888a2acbf6f044366b",
+                "reference": "b83c61fca3f491073cd5f5888a2acbf6f044366b",
                 "shasum": ""
             },
             "type": "library",
@@ -7790,7 +7794,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2020-05-11T09:51:57+00:00"
+            "time": "2021-02-10T16:21:55+00:00"
         },
         {
             "name": "vrana/jush",
@@ -7886,12 +7890,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
