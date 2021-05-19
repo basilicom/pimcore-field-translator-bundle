@@ -26,11 +26,11 @@ yarn-install: ## install npm dependencies
 
 .PHONY: yarn-build
 yarn-build: ## build frontend assets once
-	docker run --rm --volume ${PWD}:/project --workdir /project node:14-alpine sh -c "npm rebuild node-sass && yarn encore dev"
+	docker run --rm --volume ${PWD}:/project --workdir /project node:14-alpine sh -c "npm rebuild node-sass && yarn build"
 
 .PHONY: yarn-watch
 yarn-watch: ## build frontend assets once
-	docker run --rm --volume ${PWD}:/project --workdir /project node:14-alpine sh -c "npm rebuild node-sass && yarn encore dev --watch"
+	docker run --rm --volume ${PWD}:/project --workdir /project node:14-alpine sh -c "npm rebuild node-sass && yarn watch"
 
 .PHONY: watch
 watch: ## Run watchers for development
