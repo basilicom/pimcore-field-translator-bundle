@@ -2,8 +2,7 @@ import {Translator} from "./Translator";
 import {ExtJsButton, ExtJsTextfield} from "../definitions";
 
 export class FieldTranslatorButton {
-    private targetLanguage: string = "";
-    private lastTranslatedValue: string = "";
+    private readonly targetLanguage: string = "";
     private lastTranslation: string = "";
     private button?: ExtJsButton;
 
@@ -27,7 +26,7 @@ export class FieldTranslatorButton {
             }
         });
 
-        field.on!("change", (eventTarget: any) => {
+        field.on!("change", () => {
             if (this.button) this.button.setDisabled(!this.hasValueChanged(field));
         });
     }
@@ -41,7 +40,6 @@ export class FieldTranslatorButton {
                 fieldValue,
                 this.targetLanguage,
                 (resultData: any) => {
-                    this.lastTranslatedValue = fieldValue;
                     this.lastTranslation = resultData.translation;
                     field.setValue(resultData.translation);
                 },
@@ -55,7 +53,6 @@ export class FieldTranslatorButton {
     private hasValueChanged(field: ExtJsTextfield): boolean {
         const currentValue = field.getValue();
         return currentValue.length > 0
-            && currentValue !== this.lastTranslatedValue
             && currentValue !== this.lastTranslation
     }
 }

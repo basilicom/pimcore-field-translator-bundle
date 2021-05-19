@@ -42,18 +42,14 @@ const supportedTypes = ["input", "textarea", "wysiwyg"];
 export class TabTranslatorButton {
     private submitButton: Button;
 
-    private sourceLanguage: string;
-    private targetLanguage: string;
+    private readonly sourceLanguage: string;
+    private readonly targetLanguage: string;
     private localizedField: any;
 
     constructor(sourceLanguage: string, targetLanguage: string, objectId: number, localizedField: any) {
         this.sourceLanguage = sourceLanguage;
         this.targetLanguage = targetLanguage;
         this.localizedField = localizedField;
-
-        const pimcoreObjectReference = pimcore.globalmanager.get("object_" + objectId);
-        const localizedFields = pimcoreObjectReference.edit.dataFields.localizedfields;
-
         this.submitButton = new Button(
             PimcoreTranslationAdapter.translate("tabTranslatorButton.idle", {
                 "%locale": pimcore.available_languages[this.sourceLanguage]
