@@ -1,4 +1,0 @@
-basilicom_field_translator:
-  strategy: "DeepL"
-  config:
-    apiKey: "<- the API key->"

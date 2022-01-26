@@ -27,7 +27,7 @@
   "require": {
     "php": ">=7.3",
     "google/cloud-translate": "^1.8",
-    "pimcore/pimcore": ">=6.0 <7.0"
+    "pimcore/pimcore": ">=6.8 || > 10.0"
   },
   "suggest": {},
   "require-dev": {
