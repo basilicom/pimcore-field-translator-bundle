@@ -25,9 +25,9 @@
     "sort-packages": true
   },
   "require": {
-    "php": ">=7.3",
+    "php": ">=8.0",
     "google/cloud-translate": "^1.8",
-    "pimcore/pimcore": ">=6.0 <7.0"
+    "pimcore/pimcore": ">=10.0"
   },
   "suggest": {},
   "require-dev": {
